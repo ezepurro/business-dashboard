@@ -1,0 +1,88 @@
+# =========================
+# Global / OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# =========================
+# Node.js (api + frontend)
+# =========================
+node_modules/
+**/node_modules/
+
+# Build outputs
+build/
+dist/
+.next/
+out/
+
+# Cache / tooling
+coverage/
+.nyc_output/
+.eslintcache
+.parcel-cache/
+.cache/
+*.tsbuildinfo
+
+# =========================
+# Python (analytics)
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Packaging
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# =========================
+# Project-specific temporary files
+# =========================
+tmp/
+temp/
+
+# Common upload/storage dirs (keep folder with .gitkeep if needed)
+api/uploads/*
+!api/uploads/.gitkeep
