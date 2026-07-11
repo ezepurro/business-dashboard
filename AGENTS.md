@@ -1,158 +1,149 @@
 # AGENTS.md
 
-## Proyecto
+## Project
 
-**Business Dashboard para PyMEs**
+**Business Dashboard for SMBs (PyMEs)**
 
-Este repositorio implementa una plataforma de Business Intelligence
-destinada a pequeñas y medianas empresas. El objetivo es transformar
-archivos CSV/Excel en dashboards con KPIs, gráficos y análisis
-automáticos.
+This repository implements a Business Intelligence platform aimed at small and medium-sized businesses. The objective is to transform CSV/Excel files into dashboards featuring KPIs, charts, and automated analysis.
 
-## Objetivo principal
+## Main Objective
 
-Construir una aplicación Full Stack con arquitectura profesional y
-escalable, utilizando un backend principal en Node.js/Express y un
-microservicio de analítica en Python.
+Build a Full Stack application with a professional and scalable architecture, utilizing a primary backend in Node.js/Express and an analytics microservice in Python.
 
-## Stack tecnológico
+## Tech Stack
 
 ### Frontend
 
--   React
--   Typescript
--   Tailwind CSS
--   React Router
--   Axios
--   React Query
--   Recharts
+- React
+- TypeScript
+- Tailwind CSS
+- React Router
+- Axios
+- React Query
+- Recharts
 
-### API principal
+### Main API
 
--   Node.js
--   Express
--   MongoDB
--   Mongoose
--   JWT
--   Multer
-
-### Analítica
-
--   Python
--   FastAPI
--   Pandas
--   NumPy
--   OpenPyXL
-
-### Infraestructura
-
--   Docker
--   Docker Compose
-
-## Arquitectura
-
-Frontend (React) ↓ Express API ├── MongoDB └── FastAPI (Python) ↓ Pandas
-/ NumPy
-
-### Responsabilidades
-
-#### React
-
--   UI
--   Dashboards
--   Formularios
--   Visualización
-
-#### Express
-
--   Autenticación
--   CRUD
--   Uploads
--   Comunicación con Python
--   Persistencia
-
-#### FastAPI
-
--   Procesamiento de datasets
--   Limpieza de datos
--   KPIs
--   Estadísticas
--   Predicciones (futuro)
-
-## Principios
-
--   Mantener separación estricta entre frontend, backend y analítica.
--   Express nunca realiza cálculos con Pandas.
--   FastAPI nunca accede directamente a MongoDB.
--   Toda comunicación entre Express y FastAPI será mediante HTTP.
--   Priorizar código limpio, modular y tipado.
--   Evitar lógica duplicada.
-
-## MVP
-
--   Registro/Login
--   Gestión de empresas
--   Subida de CSV/Excel
--   Procesamiento automático
--   Dashboard
--   Historial de análisis
-
-## Roadmap
-
-1.  Arquitectura base
-2.  Autenticación
-3.  CRUD Empresas
-4.  Upload de archivos
-5.  Servicio FastAPI
-6.  Integración Express ↔ FastAPI
-7.  Dashboard
-8.  Reportes
-9.  IA y predicciones
-
-## Convenciones
-
-### API Express
-
--   controllers/
--   routes/
--   middleware/
--   models/
--   services/
--   utils/
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- JWT
+- Multer
 
 ### Analytics
 
--   routers/
--   services/
--   schemas/
--   utils/
+- Python
+- FastAPI
+- Pandas
+- NumPy
+- OpenPyXL
+
+### Infrastructure
+
+- Docker
+- Docker Compose
+
+## Architecture
+
+Frontend (React) ↓ Express API ├── MongoDB └── FastAPI (Python) ↓ Pandas / NumPy
+
+### Responsibilities
+
+#### React
+
+- UI
+- Dashboards
+- Forms
+- Visualization
+
+#### Express
+
+- Authentication
+- CRUD operations
+- Uploads
+- Python communication
+- Persistence
+
+#### FastAPI
+
+- Dataset processing
+- Data cleaning
+- KPIs
+- Statistics
+- Predictions (future feature)
+
+## Principles
+
+- Maintain strict separation between frontend, backend, and analytics.
+- Express never performs calculations using Pandas.
+- FastAPI never accesses MongoDB directly.
+- All communication between Express and FastAPI must be via HTTP.
+- Prioritize clean, modular, and strongly-typed code.
+- Avoid duplicated logic.
+
+## MVP
+
+- Registration/Login
+- Company management
+- CSV/Excel upload
+- Automated processing
+- Dashboard
+- Analysis history
+
+## Roadmap
+
+1.  Base architecture
+2.  Authentication
+3.  Company CRUD
+4.  File upload
+5.  FastAPI service
+6.  Express ↔ FastAPI integration
+7.  Dashboard
+8.  Reports
+9.  AI and predictions
+
+## Conventions
+
+### Express API
+
+- controllers/
+- routes/
+- middleware/
+- models/
+- services/
+- utils/
+
+### Analytics
+
+- routers/
+- services/
+- schemas/
+- utils/
 
 ### Frontend
 
--   components/
--   pages/
--   hooks/
--   services/
--   types/
--   utils/
+- components/
+- pages/
+- hooks/
+- services/
+- types/
+- utils/
 
-## Objetivo para asistentes IA
+## Objective for AI Assistants
 
-Al colaborar sobre este proyecto:
+When collaborating on this project:
 
--   Respetar la arquitectura definida.
--   Priorizar soluciones escalables.
--   Evitar acoplamiento innecesario.
--   Mantener buenas prácticas de Clean Code y SOLID.
--   Sugerir mejoras incrementales.
--   Justificar decisiones arquitectónicas.
--   No introducir dependencias pesadas sin una razón clara.
--   Favorecer TypeScript estricto y tipado consistente.
--   Documentar endpoints, modelos y decisiones relevantes.
+- Respect the defined architecture.
+- Prioritize scalable solutions.
+- Avoid unnecessary coupling.
+- Maintain Clean Code and SOLID best practices.
+- Suggest incremental improvements.
+- Justify architectural decisions.
+- Do not introduce heavy dependencies without a clear reason.
+- Favor strict TypeScript and consistent typing.
+- Document endpoints, models, and relevant decisions.
 
-## Visión
+## Vision
 
-Este proyecto está pensado como la principal pieza del portfolio del
-desarrollador. Las decisiones deben asemejarse a un producto real que
-pueda crecer hacia una plataforma completa de Business Intelligence con
-capacidades de IA.
+This project is designed as the centerpiece of the developer's portfolio. Decisions should align with a real-world product that can scale into a comprehensive Business Intelligence platform with AI capabilities.
