@@ -1,0 +1,19 @@
+services:
+  mongo:
+    image: mongo:8
+
+    container_name: business-dashboard-mongo
+
+    restart: unless-stopped
+
+    ports:
+      - "27017:27017"
+
+    environment:
+      MONGO_INITDB_DATABASE: business_dashboard
+
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
