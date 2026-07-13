@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes';
 import errorMiddleware from './middleware/error.middleware';
+import { swaggerMiddleware } from './openapi/swagger';
 import helmet from 'helmet';
 import cors from 'cors';
 
@@ -29,6 +30,8 @@ app.get('/api/health', (_, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+
+app.use('/api/docs', ...swaggerMiddleware);
 
 app.use((_req, res) => {
   res.status(404).json({
