@@ -2,7 +2,7 @@
 
 > A modern Business Intelligence platform for Small and Medium-sized Enterprises (SMEs), transforming Excel and CSV files into interactive dashboards, KPIs, and automated business insights.
 
-> **Project Status:** 🚧 Under Development
+> **Project Status:** 🚧 Under Development (Phase 1 & 2)
 
 ---
 

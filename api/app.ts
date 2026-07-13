@@ -1,22 +1,42 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import authRoutes from './routes/auth.routes';
+import errorMiddleware from './middleware/error.middleware';
+import helmet from 'helmet';
+import cors from 'cors';
 
 const app = express();
 
+app.use(helmet());
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/api/health', (_req: Request, res: Response) => {
-  res.status(200).json({
+app.use(cookieParser());
+
+app.get('/api/health', (_, res) => {
+  res.json({
     ok: true,
-    service: 'business-dashboard-api',
-    timestamp: new Date().toISOString(),
   });
 });
 
-app.get('/', (_req: Request, res: Response) => {
-  res.status(200).json({
-    message: 'Business Dashboard API running',
+app.use('/api/auth', authRoutes);
+
+app.use((_req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Endpoint no encontrado.',
   });
 });
+
+app.use(errorMiddleware);
 
 export default app;

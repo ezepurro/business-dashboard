@@ -38,6 +38,12 @@ const userSchema = new Schema(
       select: false,
     },
 
+    refreshToken: {
+      type: String,
+      default: null,
+      select: false,
+    },
+
     role: {
       type: String,
       enum: Object.values(UserRole),
