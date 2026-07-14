@@ -2,55 +2,82 @@
 
 > A modern Business Intelligence platform for Small and Medium-sized Enterprises (SMEs), transforming Excel and CSV files into interactive dashboards, KPIs, and automated business insights.
 
-> **Project Status:** 🚧 Under Development (Phase 1 & 2)
+> **Project Status:** 🚧 Active Development
 
 ---
 
 # Overview
 
-Business Dashboard is a Full Stack web application designed to help small and medium-sized businesses unlock the value of their data.
+Business Dashboard is a Full Stack Business Intelligence platform designed to help small and medium-sized businesses transform raw spreadsheet data into actionable business insights.
 
-Many companies already collect valuable information in spreadsheets—sales, customers, inventory, expenses—but lack the tools to transform that information into actionable insights.
+The application enables users to upload Excel or CSV datasets, automatically process them, generate KPIs, visualize business metrics, and explore analytical reports through an intuitive dashboard.
 
-This platform allows users to upload Excel or CSV files and automatically generates interactive dashboards, key performance indicators, statistical summaries, and business reports.
-
-The project follows a modern, service-oriented architecture that separates business logic from analytical processing, making the system scalable, maintainable, and ready for future AI-powered features.
+The project follows a modular service-oriented architecture, separating business logic from analytical processing to ensure scalability, maintainability, and future AI integration.
 
 ---
 
-# Goals
+# Current Progress
 
-- Simplify business data analysis.
-- Transform spreadsheets into actionable insights.
-- Build a scalable and maintainable software architecture.
-- Combine Full Stack Development with Data Analytics.
-- Serve as a flagship portfolio project demonstrating software engineering best practices.
+## ✅ Completed
+
+- Project architecture
+- Express + TypeScript backend
+- MongoDB integration
+- Mongoose data models
+- JWT Authentication
+- Refresh Token authentication flow
+- Password hashing with bcrypt
+- Request validation using express-validator
+- Modular OpenAPI (Swagger) documentation
+- Docker development environment
+- Database seed script
+
+## 🚧 In Progress
+
+- Company Management Module
+
+## 📅 Planned
+
+- Dataset upload
+- Analytics microservice (FastAPI)
+- Dashboard generation
+- AI-powered business analysis
+- Reporting
+- Predictive analytics
 
 ---
 
 # Features
 
-## MVP
+## Authentication
 
-- User authentication
+- User registration
+- Secure login
+- JWT Access Tokens
+- Refresh Token rotation
+- HttpOnly Cookie authentication
+- Password hashing (bcrypt)
+- Role-based authorization
+- Protected routes
+
+## Business Intelligence
+
 - Company management
 - CSV / Excel upload
-- Automatic dataset processing
-- Interactive dashboard
-- Business KPIs
+- Dataset processing
+- KPI generation
+- Interactive dashboards
 - Analysis history
 
-## Planned Features
+## Future Features
 
 - PDF report generation
 - Excel export
-- Time period comparison
 - Custom dashboards
-- Sales forecasting
-- Anomaly detection
-- Machine Learning models
-- AI-powered recommendations
-- Natural language querying over business data
+- Time period comparison
+- Forecasting models
+- AI recommendations
+- Natural language querying
 
 ---
 
@@ -82,19 +109,21 @@ The project follows a modern, service-oriented architecture that separates busin
 
 - User Interface
 - Authentication
-- Dashboard
-- Data visualization
+- Dashboard visualization
 - Charts
 - Forms
+- API consumption
 
 ### Express API
 
 - Authentication
-- User management
-- Company management
-- File uploads
 - Business logic
-- Communication with the Analytics Service
+- Company management
+- Dataset management
+- File uploads
+- Authorization
+- Communication with Analytics Service
+- OpenAPI documentation
 
 ### Analytics Service
 
@@ -102,7 +131,8 @@ The project follows a modern, service-oriented architecture that separates busin
 - Data cleaning
 - KPI calculation
 - Statistical analysis
-- Future forecasting models
+- Forecasting (future)
+- AI-powered analysis (future)
 
 ---
 
@@ -114,8 +144,8 @@ The project follows a modern, service-oriented architecture that separates busin
 - TypeScript
 - Tailwind CSS
 - React Router
-- React Query
 - Axios
+- React Query
 - Recharts
 
 ## Backend
@@ -125,7 +155,10 @@ The project follows a modern, service-oriented architecture that separates busin
 - TypeScript
 - MongoDB
 - Mongoose
-- JWT Authentication
+- JSON Web Token (JWT)
+- bcrypt
+- express-validator
+- Swagger / OpenAPI
 - Multer
 
 ## Analytics
@@ -151,6 +184,17 @@ business-dashboard/
 ├── frontend/
 │
 ├── api/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── validators/
+│   ├── utils/
+│   ├── config/
+│   ├── openapi/
+│   ├── types/
+│   └── tests/
 │
 ├── analytics/
 │
@@ -165,51 +209,86 @@ business-dashboard/
 
 ---
 
-# Data Flow
+# API Documentation
+
+The backend exposes an OpenAPI (Swagger) specification for all REST endpoints.
+
+After starting the backend, the documentation is available at:
 
 ```text
-User
-
-↓
-
-Upload CSV / Excel
-
-↓
-
-React Frontend
-
-↓
-
-Express API
-
-↓
-
-Store uploaded file
-
-↓
-
-Analytics Service (FastAPI)
-
-↓
-
-Process dataset using Pandas
-
-↓
-
-Generate KPIs
-
-↓
-
-Return analysis
-
-↓
-
-Store results
-
-↓
-
-Interactive Dashboard
+http://localhost:3000/api/docs
 ```
+
+The OpenAPI specification is maintained inside the backend under:
+
+```text
+api/openapi/
+```
+
+using a modular organization based on:
+
+- Components
+- Schemas
+- Paths
+
+---
+
+# Running the Project
+
+## Requirements
+
+- Docker Desktop
+- Node.js 22+
+- npm
+
+## Start the development environment
+
+```bash
+docker compose up --build
+```
+
+## Stop the environment
+
+```bash
+docker compose down
+```
+
+---
+
+# Environment Variables
+
+The backend requires an `.env` file inside the `api/` directory.
+
+Example:
+
+```env
+PORT=3000
+
+MONGO_URI=mongodb://mongo:27017/business_dashboard
+
+JWT_ACCESS_SECRET=your_access_secret
+
+JWT_REFRESH_SECRET=your_refresh_secret
+
+ACCESS_TOKEN_EXPIRES_IN=15m
+
+REFRESH_TOKEN_EXPIRES_IN=7d
+```
+
+---
+
+# Development Principles
+
+The project follows modern software engineering practices:
+
+- Clean Architecture
+- SOLID Principles
+- Separation of Concerns
+- Modular Design
+- Service-oriented Architecture
+- Strong TypeScript typing
+- RESTful API design
+- OpenAPI-first documentation
 
 ---
 
@@ -217,25 +296,24 @@ Interactive Dashboard
 
 ## Phase 1
 
-- Project architecture
-- Initial setup
-- Docker environment
-- React application
-- Express API
-- MongoDB integration
+- ✅ Project setup
+- ✅ Express API
+- ✅ MongoDB
+- ✅ Mongoose
+- ✅ Docker
+- ✅ Authentication
 
 ## Phase 2
 
-- Authentication
-- Company management
+- 🚧 Company Module
 
 ## Phase 3
 
-- File upload system
+- Dataset upload
 
 ## Phase 4
 
-- Analytics microservice with FastAPI
+- Analytics microservice
 
 ## Phase 5
 
@@ -247,34 +325,11 @@ Interactive Dashboard
 
 ## Phase 7
 
-- Reporting
+- Reports
 
 ## Phase 8
 
 - Artificial Intelligence features
-
----
-
-# Design Principles
-
-The project follows modern software engineering practices:
-
-- Clean Architecture
-- SOLID Principles
-- Separation of Concerns
-- Modular Design
-- Scalability
-- Maintainability
-- Strong typing with TypeScript
-- Service-oriented architecture
-
----
-
-# Current Status
-
-The project is currently in the architecture and planning phase.
-
-The initial focus is to build a robust and scalable foundation before implementing business features.
 
 ---
 
@@ -290,23 +345,22 @@ This project is also intended to deepen practical experience in:
 - MongoDB
 - Python
 - FastAPI
-- Pandas
 - Docker
-- Data Analytics
 - Business Intelligence
-- Machine Learning
+- Data Analytics
+- Artificial Intelligence
 
 ---
 
 # Future Vision
 
-The long-term goal is to evolve this application into a complete Business Intelligence platform capable of:
+The long-term goal is to evolve Business Dashboard into a complete Business Intelligence platform capable of:
 
 - Predictive Analytics
 - AI-powered Insights
 - Business Recommendations
-- Data-driven Decision Support
 - Natural Language Analytics
+- Decision Support Systems
 
 ---
 
@@ -314,7 +368,7 @@ The long-term goal is to evolve this application into a complete Business Intell
 
 This project is currently being developed as a personal portfolio project.
 
-Contributions, ideas, and feedback are always welcome.
+Suggestions, ideas, and feedback are always welcome.
 
 ---
 
@@ -324,4 +378,4 @@ This project is licensed under the MIT License.
 
 ---
 
-> **Note:** This project is actively under development and serves both as a professional portfolio piece and as an opportunity to explore modern Full Stack development, Data Analytics, and Artificial Intelligence.
+> **Note:** Business Dashboard is actively developed as a portfolio project focused on modern Full Stack development, Business Intelligence, scalable software architecture, and AI-assisted analytics.
