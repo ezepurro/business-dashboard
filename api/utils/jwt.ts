@@ -1,4 +1,5 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
+import { env } from '../config/env';
 import { UserRole } from '../types/enums';
 
 export interface AccessTokenPayload {
@@ -11,21 +12,21 @@ export interface RefreshTokenPayload {
 }
 
 export function generateAccessToken(payload: AccessTokenPayload) {
-  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRES!,
+  return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
+    expiresIn: env.JWT_ACCESS_EXPIRES as SignOptions['expiresIn'],
   });
 }
 
 export function generateRefreshToken(payload: RefreshTokenPayload) {
-  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES!,
+  return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
+    expiresIn: env.JWT_REFRESH_EXPIRES as SignOptions['expiresIn'],
   });
 }
 
 export function verifyAccessToken(token: string) {
-  return jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as AccessTokenPayload;
+  return jwt.verify(token, env.JWT_ACCESS_SECRET) as AccessTokenPayload;
 }
 
 export function verifyRefreshToken(token: string) {
-  return jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as RefreshTokenPayload;
+  return jwt.verify(token, env.JWT_REFRESH_SECRET) as RefreshTokenPayload;
 }

@@ -4,6 +4,8 @@ import { securitySchemes } from './components/security';
 import { commonResponses } from './components/responses';
 import { authSchemas } from './schemas/auth.schemas';
 import { authPaths } from './paths/auth.paths';
+import { companySchemas } from './schemas/company.schemas';
+import { companyPaths } from './paths/company.paths';
 
 const openApiSpecification = {
   openapi: '3.1.0',
@@ -36,6 +38,7 @@ const openApiSpecification = {
 
   paths: {
     ...authPaths,
+    ...companyPaths,
   },
 
   components: {
@@ -43,6 +46,7 @@ const openApiSpecification = {
 
     schemas: {
       ...authSchemas,
+      ...companySchemas,
     },
 
     responses: {

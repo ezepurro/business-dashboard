@@ -35,6 +35,30 @@ export const commonResponses = {
     },
   },
 
+  Forbidden: {
+    description: 'Forbidden',
+
+    content: {
+      'application/json': {
+        schema: {
+          $ref: '#/components/schemas/ErrorResponse',
+        },
+      },
+    },
+  },
+
+  NotFound: {
+    description: 'Not Found',
+
+    content: {
+      'application/json': {
+        schema: {
+          $ref: '#/components/schemas/ErrorResponse',
+        },
+      },
+    },
+  },
+
   InternalServerError: {
     description: 'Internal Server Error',
 
