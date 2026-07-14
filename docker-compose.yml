@@ -1,9 +1,7 @@
 services:
   mongo:
     image: mongo:8
-
     container_name: business-dashboard-mongo
-
     restart: unless-stopped
 
     ports:
@@ -14,6 +12,29 @@ services:
 
     volumes:
       - mongodb_data:/data/db
+
+  api:
+    build:
+      context: ./api
+
+    container_name: business-dashboard-api
+
+    restart: unless-stopped
+
+    depends_on:
+      - mongo
+
+    env_file:
+      - ./api/.env
+
+    ports:
+      - "3000:3000"
+
+    command: npm run dev
+
+    volumes:
+      - ./api:/app
+      - /app/node_modules
 
 volumes:
   mongodb_data:
