@@ -31,14 +31,15 @@ The project follows a modular service-oriented architecture, separating business
 - Modular OpenAPI (Swagger) documentation
 - Docker development environment
 - Database seed script
+- Company Management Module (CRUD + admin listing with pagination)
+- Dataset storage architecture design (MinIO + `StorageProvider` abstraction, upload/processing/delete flows — see [`docs/srs.md`](docs/srs.md#6-decisiones-arquitectónicas-almacenamiento-y-procesamiento-de-datasets))
 
 ## 🚧 In Progress
 
-- Company Management Module
+- Dataset Module implementation (upload, MinIO integration, FastAPI notification)
 
 ## 📅 Planned
 
-- Dataset upload
 - Analytics microservice (FastAPI)
 - Dashboard generation
 - AI-powered business analysis
@@ -63,7 +64,7 @@ The project follows a modular service-oriented architecture, separating business
 ## Business Intelligence
 
 - Company management
-- CSV / Excel upload
+- CSV / Excel upload, stored in MinIO (Object Storage) via a `StorageProvider` abstraction — never in MongoDB
 - Dataset processing
 - KPI generation
 - Interactive dashboards
@@ -92,12 +93,14 @@ The project follows a modular service-oriented architecture, separating business
 
              Express API (Node.js)
 
-              ┌─────────┴─────────┐
+        ┌───────────────┼───────────────┐
 
-              ▼                   ▼
+        ▼               ▼               ▼
 
-         MongoDB           FastAPI (Python)
-
+    MongoDB           MinIO       FastAPI (Python)
+   (metadata)     (file storage)         │
+                        ▲                │
+                        └── reads files ─┘
                                   │
 
                            Pandas / NumPy
@@ -120,13 +123,14 @@ The project follows a modular service-oriented architecture, separating business
 - Business logic
 - Company management
 - Dataset management
-- File uploads
+- File uploads, persisted to MinIO through a `StorageProvider` abstraction
 - Authorization
-- Communication with Analytics Service
+- Notifying the Analytics Service (dataset coordinates only, never the file itself)
 - OpenAPI documentation
 
 ### Analytics Service
 
+- Reads dataset files directly from MinIO (never through Express)
 - Dataset processing
 - Data cleaning
 - KPI calculation
@@ -160,6 +164,7 @@ The project follows a modular service-oriented architecture, separating business
 - express-validator
 - Swagger / OpenAPI
 - Multer
+- MinIO SDK (Object Storage client, behind a `StorageProvider` abstraction)
 
 ## Analytics
 
@@ -173,6 +178,7 @@ The project follows a modular service-oriented architecture, separating business
 
 - Docker
 - Docker Compose
+- MinIO (S3-compatible Object Storage)
 
 ---
 
@@ -189,6 +195,7 @@ business-dashboard/
 │   ├── models/
 │   ├── routes/
 │   ├── services/
+│   ├── storage/          (StorageProvider abstraction, MinIO implementation)
 │   ├── validators/
 │   ├── utils/
 │   ├── config/
@@ -273,7 +280,27 @@ JWT_REFRESH_SECRET=your_refresh_secret
 ACCESS_TOKEN_EXPIRES_IN=15m
 
 REFRESH_TOKEN_EXPIRES_IN=7d
+
+STORAGE_PROVIDER=minio
+
+MINIO_ENDPOINT=minio
+
+MINIO_PORT=9000
+
+MINIO_USE_SSL=false
+
+MINIO_ACCESS_KEY=your_minio_access_key
+
+MINIO_SECRET_KEY=your_minio_secret_key
+
+MINIO_BUCKET=datasets
+
+ANALYTICS_SERVICE_URL=http://analytics:8000
+
+INTERNAL_API_KEY=your_internal_api_key
 ```
+
+> `MINIO_*` and `INTERNAL_API_KEY` back the Dataset module's storage architecture — see [`docs/srs.md` §6](docs/srs.md#6-decisiones-arquitectónicas-almacenamiento-y-procesamiento-de-datasets) for the full design.
 
 ---
 
@@ -305,11 +332,12 @@ The project follows modern software engineering practices:
 
 ## Phase 2
 
-- 🚧 Company Module
+- ✅ Company Module
 
 ## Phase 3
 
-- Dataset upload
+- ✅ Dataset storage architecture (MinIO + `StorageProvider`)
+- 🚧 Dataset upload implementation
 
 ## Phase 4
 

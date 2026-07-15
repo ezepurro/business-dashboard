@@ -53,12 +53,14 @@ business-dashboard/
 
              Express API (Node.js)
 
-              ┌─────────┴─────────┐
+        ┌───────────────┼───────────────┐
 
-              ▼                   ▼
+        ▼               ▼               ▼
 
-         MongoDB           FastAPI (Python)
-
+    MongoDB           MinIO       FastAPI (Python)
+   (metadata)     (file storage)         │
+                        ▲                │
+                        └── reads files ─┘
                                   │
 
                            Pandas / NumPy
@@ -90,7 +92,7 @@ Responsible for:
 - Authorization
 - Business logic
 - CRUD operations
-- File uploads
+- File uploads, persisted to object storage through the `StorageProvider` abstraction
 - Communication with Analytics Service
 - Data persistence
 - API documentation
@@ -103,6 +105,7 @@ The Express API is the single entry point to the platform.
 
 Responsible for:
 
+- Reading dataset files directly from MinIO
 - Dataset processing
 - Data cleaning
 - KPI calculation
@@ -112,7 +115,7 @@ Responsible for:
 
 The Analytics Service never communicates directly with MongoDB.
 
-All communication must occur through HTTP requests from the Express API.
+All communication with MongoDB must occur through HTTP requests from the Express API. Express notifies the Analytics Service with dataset coordinates only (`datasetId`, `bucket`, `objectKey`) — it never forwards the file itself. The Analytics Service reads the object directly from MinIO using those coordinates, and reports results back to Express via a callback.
 
 ---
 
@@ -132,6 +135,7 @@ routes/
 middleware/
 models/
 services/
+storage/
 validators/
 utils/
 scripts/
@@ -140,6 +144,8 @@ openapi/
 types/
 tests/
 ```
+
+`storage/` holds the `StorageProvider` abstraction and its implementations (e.g. `MinIOStorageProvider`). It exists as its own top-level folder — a peer to `services/` — because it is the Dependency Inversion boundary between business logic and the object-storage SDK, not a business rule. See the "File Storage" section below.
 
 Future contributions must respect this layout.
 
@@ -238,6 +244,23 @@ Rules:
 - Never perform raw database operations inside controllers.
 - Keep persistence logic inside services and models.
 - Use indexes whenever appropriate.
+
+---
+
+# File Storage
+
+MongoDB never stores binary files. Every uploaded file (`.csv`, `.xlsx`) is persisted in **MinIO** (S3-compatible Object Storage). MongoDB stores only the metadata needed to locate it (`bucket`, `objectKey`, `mimeType`, `size`, ...).
+
+Rules:
+
+- The Dataset module must never know whether files are stored in MinIO, on local disk, or in Amazon S3 — it depends exclusively on the `StorageProvider` interface (`upload`, `download`, `delete`, `exists`), following the Dependency Inversion Principle.
+- The first implementation is `MinIOStorageProvider`. Future implementations (`LocalStorageProvider`, `S3StorageProvider`) live in `storage/providers/` and are wired in through `storage/storage.factory.ts` — the only file allowed to know which concrete provider is active.
+- There is **one** bucket for the whole platform. Never create a bucket per company.
+- The physical object key is always generated (`companies/<companyId>/<datasetId>.<ext>`) — never derived from the original filename, which is stored in MongoDB purely for display.
+- `storage/` code must not import Express types, `ApiError`, or any HTTP concept — it is a persistence-adjacent layer, not an HTTP layer. Storage implementations throw their own error type; services translate it into an `ApiError`.
+- The Analytics Service reads and writes objects directly against MinIO — Express never proxies file bytes to or from it.
+
+See [`docs/srs.md` §6](docs/srs.md#6-decisiones-arquitectónicas-almacenamiento-y-procesamiento-de-datasets) for the full design: bucket layout, the Dataset status machine, the upload/processing/delete sequences, and the callback contract with the Analytics Service.
 
 ---
 
@@ -365,9 +388,9 @@ Unexpected errors should reach the global error middleware.
 
 Development uses Docker Compose.
 
-MongoDB runs inside its own container.
+MongoDB and MinIO each run inside their own container.
 
-The backend container communicates with MongoDB through the Docker network.
+The backend container communicates with MongoDB and MinIO through the Docker network.
 
 Do not assume `localhost` inside containers.
 
@@ -379,13 +402,14 @@ Implemented:
 
 - Authentication
 - User management
+- Company management (CRUD + admin listing with pagination)
 - OpenAPI documentation
 - MongoDB models
+- Dataset storage architecture (MinIO + `StorageProvider` — design only, not yet implemented)
 
 Next modules:
 
-- Company
-- Dataset
+- Dataset (implementation: storage layer, upload/processing/delete flows)
 - Analysis
 - Dashboard
 - Analytics integration

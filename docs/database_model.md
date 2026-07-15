@@ -1,6 +1,8 @@
-# Modelo de Datos No Relacional (MongoDB) - Business Dashboard para PyMEs (V2)
+# Modelo de Datos No Relacional (MongoDB) - Business Dashboard para PyMEs (V3)
 
 Este documento detalla la arquitectura de persistencia y el modelo de datos basado en documentos para el proyecto **Business Dashboard para PyMEs**. Al utilizar un motor No Relacional como **MongoDB** junto con el ODM **Mongoose**, la estructura se define mediante colecciones de documentos flexibles, optimizando la velocidad de lectura y permitiendo almacenar estructuras analíticas complejas sin la rigidez de las claves foráneas (FK) o primarias (PK) tradicionales de SQL.
+
+> **Nota de alcance:** este documento describe únicamente las colecciones de **MongoDB**. Los archivos binarios (`.csv`, `.xlsx`) asociados a los datasets **nunca** se almacenan en MongoDB — se persisten en **MinIO** (Object Storage) y se referencian desde el documento `datasets` mediante los campos `bucket` y `objectKey`. El detalle completo de esa arquitectura (patrón `StorageProvider`, organización del bucket, flujos de carga/procesamiento/eliminación) vive en [`docs/srs.md` §6](./srs.md#6-decisiones-arquitectónicas-almacenamiento-y-procesamiento-de-datasets).
 
 ---
 
@@ -42,11 +44,17 @@ A continuación, se representa de manera visual cómo se estructuran y vinculan 
 │                         COLECCIÓN: datasets                            │
 ├────────────────────────────────────────────────────────────────────────┤
 │  _id (ObjectId)                                                        │
-│  filename (String)                                                     │
-│  storagePath (String)                                                  │
-│  status (String) -> ["pending", "processed", "failed"]                 │
+│  filename (String) -> [Nombre original, NUNCA usado como nombre físico]│
+│  mimeType (String)                                                     │
+│  size (Number) -> [Bytes]                                              │
+│  bucket (String) -> [Bucket único de la plataforma: "datasets"]        │
+│  objectKey (String) -> [Índice Único, ruta física del objeto en MinIO] │
+│  status (String) -> ["uploading","processing","ready","failed"]        │
 │  companyId (ObjectId) -> [Referencia lógica a "companies._id"]         │
-│  uploadedAt (Date)                                                     │
+│  uploadedBy (ObjectId) -> [Referencia lógica a "users._id"]            │
+│  errorMessage (String, Opcional) -> [Detalle si status = "failed"]     │
+│  uploadedAt (Date, Opcional) -> [Confirmado por el StorageProvider]    │
+│  createdAt / updatedAt (Date)                                          │
 └──────────────────────────────────┬─────────────────────────────────────┘
                                    │
                                    │ (Un dataset genera exactamente 1 análisis)
@@ -101,14 +109,20 @@ Permite el aislamiento de la información mediante un enfoque multi-empresa. Cad
 
 ### 2.3 Colección `datasets`
 
-Funciona como el registro histórico de las interacciones de carga de archivos (`.csv` o `.xlsx`) por parte del usuario.
+Funciona como el registro histórico de las interacciones de carga de archivos (`.csv` o `.xlsx`) por parte del usuario. Almacena **exclusivamente metadatos**: el archivo binario nunca pasa por MongoDB, se persiste en MinIO y este documento guarda únicamente las coordenadas necesarias para ubicarlo (`bucket` + `objectKey`).
 
-- **`_id`**: Identificador único del dataset (`ObjectId`).
-- **`filename`**: Nombre original del archivo subido (`String`, requerido).
-- **`storagePath`**: Ruta del servidor local (directorio `uploads/` administrado por `multer`) o URI de almacenamiento en la nube donde reside físicamente el archivo físico (`String`, requerido).
-- **`status`**: Estado interno del flujo de procesamiento (`String`, valores admitidos: `"pending"`, `"processed"`, `"failed"`).
-- **`companyId`**: Referencia lógica a la empresa dueña de la información (`ObjectId`, requerido).
-- **`uploadedAt`**: Fecha exacta del momento de la carga (`Date`, por defecto `Date.now`).
+- **`_id`**: Identificador único del dataset (`ObjectId`). Se genera **antes** de subir el archivo, porque `objectKey` lo embebe.
+- **`filename`**: Nombre original del archivo subido, tal cual lo envió el usuario (`String`, requerido). Es puramente informativo/de visualización — nunca se usa para nombrar el objeto físico en MinIO.
+- **`mimeType`**: Tipo MIME reportado y validado por `multer` al momento de la carga (`String`, requerido).
+- **`size`**: Tamaño del archivo en bytes (`Number`, requerido).
+- **`bucket`**: Nombre del bucket de MinIO donde reside el objeto (`String`, requerido). En esta versión siempre es `"datasets"` — un único bucket para toda la plataforma.
+- **`objectKey`**: Ruta/clave física única del objeto dentro del bucket (`String`, requerido, único, indexado). Formato: `companies/<companyId>/<datasetId>.<extensión>`. Nunca se deriva del nombre original del archivo.
+- **`status`**: Estado del flujo de carga y procesamiento (`String`, valores admitidos: `"uploading"`, `"processing"`, `"ready"`, `"failed"`). Ver la máquina de estados completa en `docs/srs.md §6.4`.
+- **`companyId`**: Referencia lógica a la empresa dueña de la información (`ObjectId`, requerido, indexado).
+- **`uploadedBy`**: Referencia lógica al usuario que realizó la carga (`ObjectId`, requerido).
+- **`errorMessage`**: Detalle del fallo cuando `status = "failed"` (`String`, opcional, por defecto `null`).
+- **`uploadedAt`**: Fecha en la que el `StorageProvider` confirmó la escritura exitosa del objeto en MinIO (`Date`, opcional, `null` mientras `status = "uploading"`). Es distinto de `createdAt`, que marca cuándo se creó el documento (inicio de la carga).
+- **`createdAt` / `updatedAt`**: Marcas de tiempo del ciclo de vida del documento, gestionadas por Mongoose (`Date`).
 
 ### 2.4 Colección `analyses`
 
@@ -136,3 +150,4 @@ Esta colección aprovecha al máximo la flexibilidad de MongoDB al **embeber o a
 1.  **Eliminación de Joins mediante Embebido**: Los KPIs y las series temporales de gráficos (`monthlyTrends`) se guardan directamente dentro del documento de análisis. Al ser datos de lectura frecuente e inmutables una vez procesados, MongoDB permite recuperarlos en una sola operación de E/S de base de datos.
 2.  **Estrategia de Denormalización**: Al incluir `companyId` directamente en la colección `analyses`, optimizamos drásticamente el endpoint de `Historial de Análisis`, evitando requerir una consulta en cascada sobre los archivos cargados.
 3.  **Flexibilidad del Esquema frente a Versiones Futuras**: En las fases de evolución del producto (IA, predicción de ventas o detección de anomalías), el subdocumento `kpis` o la colección `analyses` podrá expandirse con nuevos campos matemáticos sin necesidad de ejecutar migraciones estructurales complejas de bases de datos.
+4.  **Desacoplamiento del Almacenamiento Binario (MinIO + `StorageProvider`)**: MongoDB queda reservado exclusivamente para metadatos estructurados; el peso de los archivos (`.csv`/`.xlsx`) recae en MinIO, un Object Storage compatible con S3. La colección `datasets` nunca contiene un buffer, un `Buffer` de Node ni chunks de GridFS — solo `bucket` + `objectKey`, que son coordenadas de lectura. Esta separación evita que el tamaño de la base de datos operacional crezca con el volumen de archivos subidos, y permite escalar o migrar el backend de almacenamiento (MinIO → S3, por ejemplo) sin tocar ni el esquema ni la lógica de negocio del módulo de Dataset.
