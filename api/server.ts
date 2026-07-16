@@ -1,6 +1,7 @@
 import app from './app';
-import 'dotenv/config';
 import { connectDB } from './config/database';
+import { initializeStorage } from './storage/initialize-storage';
+import 'dotenv/config';
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -8,6 +9,9 @@ async function startServer() {
   try {
     // Connect to MongoDB
     await connectDB();
+
+    // Initialize storage (also create bucket if it doesn't exist)
+    await initializeStorage();
 
     // Start Express server
     const server = app.listen(PORT, () => {

@@ -290,9 +290,8 @@ The system supports role-based authorization.
 
 User roles:
 
-- OWNER
+- USER
 - ADMIN
-- VIEWER
 
 Protected routes must validate both:
 
