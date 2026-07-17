@@ -1,5 +1,5 @@
 import { Router } from 'express';
-
+import datasetRoutes from './dataset.routes';
 import companyController from '../controllers/company.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validateObjectId } from '../middleware/validate-object-id.middleware';
@@ -26,6 +26,8 @@ router.get(
   validateRequest,
   companyController.findAllAdmin,
 );
+
+router.use('/:companyId/datasets', datasetRoutes);
 
 router.get('/:id', validateObjectId('id'), companyController.findById);
 

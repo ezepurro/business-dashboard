@@ -40,6 +40,6 @@ export const env = {
   },
 
   ANALYTICS: {
-    URL: required('ANALYTICS_SERVICE_URL'),
+    // URL: required('ANALYTICS_SERVICE_URL'),
   },
 };

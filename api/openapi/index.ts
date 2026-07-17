@@ -6,6 +6,8 @@ import { authSchemas } from './schemas/auth.schemas';
 import { authPaths } from './paths/auth.paths';
 import { companySchemas } from './schemas/company.schemas';
 import { companyPaths } from './paths/company.paths';
+import { datasetSchemas } from './schemas/dataset.schemas';
+import { datasetPaths } from './paths/dataset.paths';
 
 const openApiSpecification = {
   openapi: '3.1.0',
@@ -39,6 +41,7 @@ const openApiSpecification = {
   paths: {
     ...authPaths,
     ...companyPaths,
+    ...datasetPaths,
   },
 
   components: {
@@ -47,6 +50,7 @@ const openApiSpecification = {
     schemas: {
       ...authSchemas,
       ...companySchemas,
+      ...datasetSchemas,
     },
 
     responses: {

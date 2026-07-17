@@ -1,46 +1,72 @@
-import { InferSchemaType, model, Schema } from 'mongoose';
-import { DatasetStatus } from '../types/enums';
+import { InferSchemaType, Schema, Types, model } from 'mongoose';
+
+export enum DatasetStatus {
+  UPLOADING = 'UPLOADING',
+  UPLOADED = 'UPLOADED',
+  PROCESSING = 'PROCESSING',
+  READY = 'READY',
+  FAILED = 'FAILED',
+  DELETED = 'DELETED',
+}
 
 const datasetSchema = new Schema(
   {
-    filename: {
-      type: String,
+    company: {
+      type: Schema.Types.ObjectId,
+      ref: 'Company',
       required: true,
-      trim: true,
-      maxlength: 255,
     },
 
-    storagePath: {
+    uploadedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+
+    originalFilename: {
       type: String,
       required: true,
-      trim: true,
+    },
+
+    extension: {
+      type: String,
+      required: true,
+    },
+
+    mimeType: {
+      type: String,
+      required: true,
+    },
+
+    size: {
+      type: Number,
+      required: true,
+    },
+
+    bucket: {
+      type: String,
+      required: true,
+    },
+
+    objectKey: {
+      type: String,
+      required: true,
+      unique: true,
     },
 
     status: {
       type: String,
       enum: Object.values(DatasetStatus),
-      default: DatasetStatus.PENDING,
-    },
-
-    companyId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Company',
-      required: true,
-      index: true,
-    },
-
-    uploadedAt: {
-      type: Date,
-      default: Date.now,
+      default: DatasetStatus.UPLOADING,
     },
   },
   {
-    versionKey: false,
+    timestamps: true,
   },
 );
 
-datasetSchema.index({ companyId: 1, uploadedAt: -1 });
+export type DatasetDocument = InferSchemaType<typeof datasetSchema> & {
+  _id: Types.ObjectId;
+};
 
-export type Dataset = InferSchemaType<typeof datasetSchema>;
-
-export default model<Dataset>('Dataset', datasetSchema);
+export default model<DatasetDocument>('Dataset', datasetSchema);

@@ -15,6 +15,10 @@ export class MinIOStorageProvider implements StorageProvider {
     this.bucket = env.MINIO.BUCKET;
   }
 
+  getBucketName(): string {
+    return this.bucket;
+  }
+
   async initialize(): Promise<void> {
     try {
       const exists = await this.client.bucketExists(this.bucket);
