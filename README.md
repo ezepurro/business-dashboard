@@ -32,11 +32,13 @@ The project follows a modular service-oriented architecture, separating business
 - Docker development environment
 - Database seed script
 - Company Management Module (CRUD + admin listing with pagination)
-- Dataset storage architecture design (MinIO + `StorageProvider` abstraction, upload/processing/delete flows — see [`docs/srs.md`](docs/srs.md#6-decisiones-arquitectónicas-almacenamiento-y-procesamiento-de-datasets))
+- Dataset storage architecture design (MinIO + `StorageProvider` abstraction)
+- Dataset Module (upload, listing, retrieval and soft deletion)
+- MinIO integration
 
 ## 🚧 In Progress
 
-- Dataset Module implementation (upload, MinIO integration, FastAPI notification)
+- Analytics Service integration (FastAPI notification)
 
 ## 📅 Planned
 
@@ -49,6 +51,15 @@ The project follows a modular service-oriented architecture, separating business
 ---
 
 # Features
+
+## Dataset Storage
+
+Datasets are stored using a hybrid storage architecture:
+
+- MongoDB stores dataset metadata.
+- MinIO stores the original files.
+- Express never stores binary files inside MongoDB.
+- Future analytics services will read datasets directly from MinIO using object coordinates.
 
 ## Authentication
 
@@ -65,6 +76,8 @@ The project follows a modular service-oriented architecture, separating business
 
 - Company management
 - CSV / Excel upload, stored in MinIO (Object Storage) via a `StorageProvider` abstraction — never in MongoDB
+- Dataset upload
+- Dataset management
 - Dataset processing
 - KPI generation
 - Interactive dashboards
@@ -126,6 +139,7 @@ The project follows a modular service-oriented architecture, separating business
 - File uploads, persisted to MinIO through a `StorageProvider` abstraction
 - Authorization
 - Notifying the Analytics Service (dataset coordinates only, never the file itself)
+- Dataset metadata persistence (MongoDB)
 - OpenAPI documentation
 
 ### Analytics Service
@@ -201,6 +215,7 @@ business-dashboard/
 │   ├── config/
 │   ├── openapi/
 │   ├── types/
+│   ├── contracts/
 │   └── tests/
 │
 ├── analytics/
@@ -277,9 +292,9 @@ JWT_ACCESS_SECRET=your_access_secret
 
 JWT_REFRESH_SECRET=your_refresh_secret
 
-ACCESS_TOKEN_EXPIRES_IN=15m
+JWT_ACCESS_EXPIRES=15m
 
-REFRESH_TOKEN_EXPIRES_IN=7d
+JWT_REFRESH_EXPIRES=7d
 
 STORAGE_PROVIDER=minio
 
@@ -333,18 +348,22 @@ The project follows modern software engineering practices:
 ## Phase 2
 
 - ✅ Company Module
+- Analysis Module
 
 ## Phase 3
 
-- ✅ Dataset storage architecture (MinIO + `StorageProvider`)
-- 🚧 Dataset upload implementation
+- ✅ Dataset storage architecture
+- ✅ Dataset Module
+- ✅ MinIO integration
+- ✅ OpenAPI documentation
 
 ## Phase 4
 
-- Analytics microservice
+- Frontend general development
 
 ## Phase 5
 
+- Analytics microservice
 - Express ↔ FastAPI integration
 
 ## Phase 6
@@ -389,6 +408,7 @@ The long-term goal is to evolve Business Dashboard into a complete Business Inte
 - Business Recommendations
 - Natural Language Analytics
 - Decision Support Systems
+- Automated KPI generation
 
 ---
 

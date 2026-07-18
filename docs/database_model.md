@@ -19,6 +19,7 @@ A continuación, se representa de manera visual cómo se estructuran y vinculan 
 │  name (String)                                                         │
 │  email (String) -> [Índice Único]                                      │
 │  passwordHash (String)                                                 │
+│  refreshToken (String)                                                 │
 │  role (String) -> ["admin", "user"]                                    │
 │  status (String) -> ["active", "suspended", "pending"]                 │
 │  createdAt / updatedAt (Date)                                          │
@@ -40,22 +41,21 @@ A continuación, se representa de manera visual cómo se estructuran y vinculan 
                                    │
                                    │ (Una empresa posee N datasets cargados)
                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                         COLECCIÓN: datasets                            │
-├────────────────────────────────────────────────────────────────────────┤
-│  _id (ObjectId)                                                        │
-│  filename (String) -> [Nombre original, NUNCA usado como nombre físico]│
-│  mimeType (String)                                                     │
-│  size (Number) -> [Bytes]                                              │
-│  bucket (String) -> [Bucket único de la plataforma: "datasets"]        │
-│  objectKey (String) -> [Índice Único, ruta física del objeto en MinIO] │
-│  status (String) -> ["uploading","processing","ready","failed"]        │
-│  companyId (ObjectId) -> [Referencia lógica a "companies._id"]         │
-│  uploadedBy (ObjectId) -> [Referencia lógica a "users._id"]            │
-│  errorMessage (String, Opcional) -> [Detalle si status = "failed"]     │
-│  uploadedAt (Date, Opcional) -> [Confirmado por el StorageProvider]    │
-│  createdAt / updatedAt (Date)                                          │
-└──────────────────────────────────┬─────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                  COLECCIÓN: datasets                                        │
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+│  _id (ObjectId)                                                                             │
+│  originalFilename (String)                                                                  │
+│  extension (String)                                                                         │
+│  mimeType (String)                                                                          │
+│  size (Number) -> [Bytes]                                                                   │
+│  bucket (String) -> [Bucket único de la plataforma: "datasets"]                             │
+│  objectKey (String) -> [Índice Único, ruta física del objeto en MinIO]                      │
+│  status (String) -> ["uploading","uploaded","processing","ready","failed","deleted"]        │
+│  company (ObjectId) -> [Referencia lógica a "companies._id"]                                │
+│  uploadedBy (ObjectId) -> [Referencia lógica a "users._id"]                                 │
+│  createdAt / updatedAt (Date)                                                               │
+└──────────────────────────────────┬──────────────────────────────────────────────────────────┘
                                    │
                                    │ (Un dataset genera exactamente 1 análisis)
                                    ▼
@@ -91,6 +91,7 @@ Almacena las credenciales, perfiles y permisos de los usuarios de la plataforma.
 - **`name`**: Nombre completo del usuario (`String`, requerido).
 - **`email`**: Dirección de correo electrónico (`String`, requerido, único, indexado).
 - **`passwordHash`**: Contraseña encriptada mediante la librería `bcrypt` (`String`, requerido).
+- **`refreshToken`**: Hash del Refresh Token activo del usuario. Se utiliza para la renovación segura del Access Token y se almacena cifrado mediante `bcrypt` (`String`, opcional).
 - **`role`**: Control de acceso y permisos (`String`, requerido, valores admitidos: `"admin"`, `"user"`).
 - **`status`**: Estado del ciclo de vida de la cuenta (`String`, requerido, valores admitidos: `"active"`, `"suspended"`, `"pending"`).
 - **`createdAt` / `updatedAt`**: Marcas de tiempo de creación y modificación automática gestionadas por Mongoose (`Date`).
@@ -112,16 +113,15 @@ Permite el aislamiento de la información mediante un enfoque multi-empresa. Cad
 Funciona como el registro histórico de las interacciones de carga de archivos (`.csv` o `.xlsx`) por parte del usuario. Almacena **exclusivamente metadatos**: el archivo binario nunca pasa por MongoDB, se persiste en MinIO y este documento guarda únicamente las coordenadas necesarias para ubicarlo (`bucket` + `objectKey`).
 
 - **`_id`**: Identificador único del dataset (`ObjectId`). Se genera **antes** de subir el archivo, porque `objectKey` lo embebe.
-- **`filename`**: Nombre original del archivo subido, tal cual lo envió el usuario (`String`, requerido). Es puramente informativo/de visualización — nunca se usa para nombrar el objeto físico en MinIO.
+- **`originalFilename`**: Nombre original del archivo subido, tal cual lo envió el usuario (`String`, requerido). Es puramente informativo/de visualización — nunca se usa para nombrar el objeto físico en MinIO.
+- **`extension`**: Extensión original del archivo (`csv`, `xlsx`, etc.) utilizada para construir el `objectKey` dentro del almacenamiento de objetos (`String`, requerido).
 - **`mimeType`**: Tipo MIME reportado y validado por `multer` al momento de la carga (`String`, requerido).
 - **`size`**: Tamaño del archivo en bytes (`Number`, requerido).
 - **`bucket`**: Nombre del bucket de MinIO donde reside el objeto (`String`, requerido). En esta versión siempre es `"datasets"` — un único bucket para toda la plataforma.
-- **`objectKey`**: Ruta/clave física única del objeto dentro del bucket (`String`, requerido, único, indexado). Formato: `companies/<companyId>/<datasetId>.<extensión>`. Nunca se deriva del nombre original del archivo.
-- **`status`**: Estado del flujo de carga y procesamiento (`String`, valores admitidos: `"uploading"`, `"processing"`, `"ready"`, `"failed"`). Ver la máquina de estados completa en `docs/srs.md §6.4`.
-- **`companyId`**: Referencia lógica a la empresa dueña de la información (`ObjectId`, requerido, indexado).
+- **`objectKey`**: Ruta/clave física única del objeto dentro del bucket (`String`, requerido, único, indexado). Formato: `companies/{companyId}/{datasetId}.{extension}`. Nunca se deriva del nombre original del archivo.
+- **`status`**: Estado del flujo de carga y procesamiento (`String`, valores admitidos: `"uploading"`, `"uploaded"`, `"processing"`, `"ready"`, `"failed"`, `"deleted"`,). Ver la máquina de estados completa en `docs/srs.md §6.4`.
+- **`company`**: Referencia lógica a la empresa dueña de la información (`ObjectId`, requerido, indexado).
 - **`uploadedBy`**: Referencia lógica al usuario que realizó la carga (`ObjectId`, requerido).
-- **`errorMessage`**: Detalle del fallo cuando `status = "failed"` (`String`, opcional, por defecto `null`).
-- **`uploadedAt`**: Fecha en la que el `StorageProvider` confirmó la escritura exitosa del objeto en MinIO (`Date`, opcional, `null` mientras `status = "uploading"`). Es distinto de `createdAt`, que marca cuándo se creó el documento (inicio de la carga).
 - **`createdAt` / `updatedAt`**: Marcas de tiempo del ciclo de vida del documento, gestionadas por Mongoose (`Date`).
 
 ### 2.4 Colección `analyses`
