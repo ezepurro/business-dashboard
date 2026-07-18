@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import type { MonthlyTrend } from '../../types/analysis.types';
 import { formatCurrency } from '../../utils/format';
 
@@ -16,6 +17,8 @@ interface RevenueTrendChartProps {
 }
 
 export function RevenueTrendChart({ data, currency }: RevenueTrendChartProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -45,7 +48,7 @@ export function RevenueTrendChart({ data, currency }: RevenueTrendChartProps) {
               fontSize: 13,
             }}
             labelStyle={{ color: 'var(--color-foreground)' }}
-            formatter={(value) => [formatCurrency(Number(value), currency), 'Revenue']}
+            formatter={(value) => [formatCurrency(Number(value), currency), t('kpis.revenue')]}
           />
           <Line
             type="monotone"

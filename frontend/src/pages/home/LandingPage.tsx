@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { HeroSection } from '../../components/landing/HeroSection';
 import { SpecsStrip } from '../../components/landing/SpecsStrip';
 import { PillarsRow } from '../../components/landing/PillarsRow';
@@ -14,6 +15,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 export function LandingPage() {
   const { status } = useAuth();
+  const { t } = useTranslation();
   const isAuthenticated = status === 'authenticated';
 
   return (
@@ -31,28 +33,20 @@ export function LandingPage() {
         <DeepDiveSection
           id="ingestion"
           icon={UploadIcon}
-          eyebrow="Ingestion"
-          title="Every upload is validated before it's stored"
-          description="Sales exports rarely arrive clean. Business Dashboard checks extension, MIME type and size the moment a file lands, so bad uploads fail fast instead of silently breaking a report."
-          bullets={[
-            '.csv and .xlsx, up to 15MB per file',
-            'Files are validated before they ever reach storage',
-            'A clear status — uploaded, processing, ready, or failed — for every dataset',
-          ]}
+          eyebrow={t('landing.deepDive.ingestion.eyebrow')}
+          title={t('landing.deepDive.ingestion.title')}
+          description={t('landing.deepDive.ingestion.description')}
+          bullets={t('landing.deepDive.ingestion.bullets', { returnObjects: true }) as string[]}
           visual={<IngestionPanelMock />}
         />
 
         <DeepDiveSection
           id="kpis"
           icon={ChartIcon}
-          eyebrow="Analysis"
-          title="From raw rows to a boardroom-ready number"
-          description="Once a dataset finishes processing, the numbers that actually drive decisions are computed automatically — no spreadsheet formulas, no manual pivot tables."
-          bullets={[
-            'Total revenue, average ticket and total orders at a glance',
-            'Top-selling product surfaced automatically',
-            'Monthly revenue trends, ready to chart',
-          ]}
+          eyebrow={t('landing.deepDive.kpis.eyebrow')}
+          title={t('landing.deepDive.kpis.title')}
+          description={t('landing.deepDive.kpis.description')}
+          bullets={t('landing.deepDive.kpis.bullets', { returnObjects: true }) as string[]}
           visual={<KpiPanelDemo />}
           reverse
         />
@@ -60,14 +54,10 @@ export function LandingPage() {
         <DeepDiveSection
           id="workspaces"
           icon={GridIcon}
-          eyebrow="Workspaces"
-          title="Run every company from one account"
-          description="Manage a portfolio of businesses without mixing their data. Each company keeps its own datasets, currency and history, isolated from every other workspace you own."
-          bullets={[
-            'Create as many company workspaces as you need',
-            'Each one keeps its own currency, industry and dataset history',
-            'Switch between businesses in a single click',
-          ]}
+          eyebrow={t('landing.deepDive.workspaces.eyebrow')}
+          title={t('landing.deepDive.workspaces.title')}
+          description={t('landing.deepDive.workspaces.description')}
+          bullets={t('landing.deepDive.workspaces.bullets', { returnObjects: true }) as string[]}
           visual={<WorkspacePanelMock />}
         />
 

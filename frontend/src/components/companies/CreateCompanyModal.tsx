@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateCompany } from '../../hooks/useCompanies';
 import { parseApiError } from '../../utils/getErrorMessage';
 import type { ApiFieldError } from '../../types/api.types';
@@ -18,6 +19,7 @@ function fieldError(errors: ApiFieldError[], field: string) {
 
 export function CreateCompanyModal({ onClose, onCreated }: CreateCompanyModalProps) {
   const createCompany = useCreateCompany();
+  const { t } = useTranslation();
 
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
@@ -47,12 +49,12 @@ export function CreateCompanyModal({ onClose, onCreated }: CreateCompanyModalPro
   }
 
   return (
-    <Modal title="New company" onClose={onClose}>
+    <Modal title={t('createCompanyModal.title')} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {formError && <AlertBanner message={formError} />}
 
         <Input
-          label="Company name"
+          label={t('createCompanyModal.nameLabel')}
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -60,15 +62,15 @@ export function CreateCompanyModal({ onClose, onCreated }: CreateCompanyModalPro
         />
 
         <Input
-          label="Industry"
-          placeholder="e.g. Retail, Software"
+          label={t('createCompanyModal.industryLabel')}
+          placeholder={t('createCompanyModal.industryPlaceholder')}
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
           error={fieldError(fieldErrors, 'industry')}
         />
 
         <Input
-          label="Currency (ISO 4217)"
+          label={t('createCompanyModal.currencyLabel')}
           maxLength={3}
           value={currency}
           onChange={(e) => setCurrency(e.target.value.toUpperCase())}
@@ -76,7 +78,7 @@ export function CreateCompanyModal({ onClose, onCreated }: CreateCompanyModalPro
         />
 
         <Input
-          label="Founded on"
+          label={t('createCompanyModal.foundedLabel')}
           type="date"
           value={foundedAt}
           onChange={(e) => setFoundedAt(e.target.value)}
@@ -85,10 +87,10 @@ export function CreateCompanyModal({ onClose, onCreated }: CreateCompanyModalPro
 
         <div className="mt-2 flex justify-end gap-3">
           <Button type="button" variant="secondary" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit" isLoading={createCompany.isPending}>
-            Create company
+            {t('createCompanyModal.submit')}
           </Button>
         </div>
       </form>

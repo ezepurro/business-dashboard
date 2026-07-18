@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { GithubIcon, GlobeIcon, LinkedinIcon, MailIcon } from './icons';
 
 const SOCIAL_LINKS = [
@@ -8,19 +9,21 @@ const SOCIAL_LINKS = [
 ];
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-border">
       <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-base font-semibold text-foreground">Business Dashboard</p>
-            <p className="mt-2 max-w-xs text-sm text-foreground-secondary">
-              Business Intelligence for growing companies — turning spreadsheets into decisions.
-            </p>
+            <p className="text-base font-semibold text-foreground">{t('nav.brand')}</p>
+            <p className="mt-2 max-w-xs text-sm text-foreground-secondary">{t('footer.tagline')}</p>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Connect</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+              {t('footer.connect')}
+            </p>
             <ul className="mt-3 flex flex-col gap-2.5">
               {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => {
                 const isMail = href.startsWith('mailto:');
@@ -44,9 +47,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6">
-          <p className="text-xs text-muted">
-            © {new Date().getFullYear()} Business Dashboard. Built for growing SMBs.
-          </p>
+          <p className="text-xs text-muted">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </footer>

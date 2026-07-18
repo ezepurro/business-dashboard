@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../constants/routes';
 import { parseApiError } from '../../utils/getErrorMessage';
@@ -16,6 +17,7 @@ function fieldError(errors: ApiFieldError[], field: string) {
 export function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
@@ -45,17 +47,15 @@ export function RegisterPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-6 py-20">
-      <h1 className="text-2xl font-semibold text-foreground">Create your account</h1>
-      <p className="mt-1 text-sm text-foreground-secondary">
-        Start turning your sales data into dashboards in minutes.
-      </p>
+      <h1 className="text-2xl font-semibold text-foreground">{t('auth.register.title')}</h1>
+      <p className="mt-1 text-sm text-foreground-secondary">{t('auth.register.subtitle')}</p>
 
       <Card className="mt-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {formError && <AlertBanner message={formError} />}
 
           <Input
-            label="Username"
+            label={t('auth.register.usernameLabel')}
             autoComplete="username"
             required
             value={username}
@@ -64,7 +64,7 @@ export function RegisterPage() {
           />
 
           <Input
-            label="Full name"
+            label={t('auth.register.fullNameLabel')}
             autoComplete="name"
             required
             value={name}
@@ -73,7 +73,7 @@ export function RegisterPage() {
           />
 
           <Input
-            label="Email"
+            label={t('auth.register.emailLabel')}
             type="email"
             autoComplete="email"
             required
@@ -83,7 +83,7 @@ export function RegisterPage() {
           />
 
           <Input
-            label="Password"
+            label={t('auth.register.passwordLabel')}
             type="password"
             autoComplete="new-password"
             required
@@ -94,15 +94,15 @@ export function RegisterPage() {
           />
 
           <Button type="submit" isLoading={isSubmitting} className="mt-2 cursor-pointer">
-            Create account
+            {t('auth.register.submit')}
           </Button>
         </form>
       </Card>
 
       <p className="mt-6 text-center text-sm text-foreground-secondary">
-        Already have an account?{' '}
+        {t('auth.register.haveAccount')}{' '}
         <Link to={ROUTES.login} className="font-medium text-primary">
-          Log in
+          {t('auth.register.logIn')}
         </Link>
       </p>
     </div>

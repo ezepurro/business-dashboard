@@ -1,10 +1,26 @@
+import i18n from '../i18n';
+
+const LOCALE_TAGS: Record<string, string> = {
+  en: 'en-US',
+  es: 'es-AR',
+};
+
+export function resolveLocale() {
+  const baseLanguage = i18n.language.split('-')[0];
+  return LOCALE_TAGS[baseLanguage] ?? LOCALE_TAGS.en;
+}
+
 export function formatCurrency(value: number, currency: string) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value);
+  return new Intl.NumberFormat(resolveLocale(), { style: 'currency', currency }).format(value);
 }
 
 export function formatDate(value: string | null) {
   if (!value) return '—';
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(value));
+  return new Intl.DateTimeFormat(resolveLocale(), { dateStyle: 'medium' }).format(new Date(value));
+}
+
+export function formatNumber(value: number) {
+  return new Intl.NumberFormat(resolveLocale()).format(value);
 }
 
 export function formatFileSize(bytes: number) {

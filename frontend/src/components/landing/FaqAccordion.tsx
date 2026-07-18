@@ -1,34 +1,24 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const FAQS = [
-  {
-    question: 'What is Business Dashboard?',
-    answer:
-      'A Business Intelligence platform for small and medium-sized businesses. You upload a sales spreadsheet and get KPIs and charts back, without building a single formula or pivot table.',
-  },
-  {
-    question: 'What file formats can I upload?',
-    answer:
-      'CSV and Excel (.xlsx) exports, up to 15MB per file — the format most sales tools already export.',
-  },
-  {
-    question: 'Can I manage more than one business?',
-    answer:
-      'Yes. Every company you create is its own isolated workspace with its own datasets, KPIs and history — switch between them from one account.',
-  },
-];
+interface Faq {
+  question: string;
+  answer: string;
+}
 
 export function FaqAccordion() {
+  const { t } = useTranslation();
+  const faqs = t('landing.faq.items', { returnObjects: true }) as Faq[];
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
     <section className="border-b border-border py-20">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-10 lg:grid-cols-[1fr_2fr]">
-          <h2 className="text-3xl font-semibold text-foreground">FAQ</h2>
+          <h2 className="text-3xl font-semibold text-foreground">{t('landing.faq.heading')}</h2>
 
           <dl className="flex flex-col divide-y divide-border">
-            {FAQS.map((faq, index) => {
+            {faqs.map((faq, index) => {
               const isOpen = openIndex === index;
 
               return (

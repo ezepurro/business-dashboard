@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCompanies } from '../../hooks/useCompanies';
 import { ROUTES } from '../../constants/routes';
 import { Button } from '../../components/ui/Button';
@@ -13,6 +14,7 @@ export function CompaniesPage() {
   const { data: companies, isLoading, isError } = useCompanies();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   function handleCreated(companyId: string) {
     setIsModalOpen(false);
@@ -23,28 +25,26 @@ export function CompaniesPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">My Companies</h1>
-          <p className="mt-1 text-sm text-foreground-secondary">
-            Manage every business workspace you own.
-          </p>
+          <h1 className="text-2xl font-semibold text-foreground">{t('companies.title')}</h1>
+          <p className="mt-1 text-sm text-foreground-secondary">{t('companies.subtitle')}</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} className="cursor-pointer">
-          New company
+          {t('companies.newCompany')}
         </Button>
       </div>
 
       <div className="mt-8">
-        {isLoading && <Spinner label="Loading companies…" />}
+        {isLoading && <Spinner label={t('companies.loading')} />}
 
-        {isError && <AlertBanner message="We couldn't load your companies. Please try again." />}
+        {isError && <AlertBanner message={t('companies.loadError')} />}
 
         {!isLoading && !isError && companies?.length === 0 && (
           <EmptyState
-            title="No companies yet"
-            description="Create your first company to start uploading datasets and viewing KPIs."
+            title={t('companies.emptyTitle')}
+            description={t('companies.emptyDescription')}
             action={
               <Button onClick={() => setIsModalOpen(true)} className="cursor-pointer">
-                Create your first company
+                {t('companies.createFirst')}
               </Button>
             }
           />

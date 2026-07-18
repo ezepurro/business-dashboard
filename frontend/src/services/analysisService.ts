@@ -1,20 +1,6 @@
 import type { Analysis, MonthlyTrend } from '../types/analysis.types';
 import type { Dataset } from '../types/dataset.types';
-
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
+import { resolveLocale } from '../utils/format';
 
 const MOCK_PRODUCTS = ['Notebook Pro 15', 'Wireless Mouse X2', 'Office Chair Ergo', 'Monitor 27" 4K', '24-Pack Notebooks'];
 
@@ -37,11 +23,12 @@ function seededRandom(seed: string) {
 
 function buildMonthlyTrends(random: () => number): MonthlyTrend[] {
   const now = new Date();
+  const monthFormatter = new Intl.DateTimeFormat(resolveLocale(), { month: 'long' });
 
   return Array.from({ length: 6 }, (_, i) => {
-    const monthIndex = (now.getMonth() - (5 - i) + 12) % 12;
+    const date = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
     return {
-      month: MONTHS[monthIndex],
+      month: monthFormatter.format(date),
       revenue: Math.round(20000 + random() * 80000),
     };
   });

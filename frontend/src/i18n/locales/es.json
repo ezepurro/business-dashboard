@@ -1,0 +1,237 @@
+{
+  "common": {
+    "getStartedFree": "Empezar gratis",
+    "logIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "logOut": "Cerrar sesión",
+    "goToMyCompanies": "Ir a mis empresas",
+    "learnMore": "Ver más",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "loading": "Cargando…"
+  },
+  "nav": {
+    "brand": "Business Dashboard",
+    "myCompanies": "Mis Empresas"
+  },
+  "footer": {
+    "tagline": "Business Intelligence para empresas en crecimiento — convertimos planillas en decisiones.",
+    "connect": "Contacto",
+    "copyright": "© {{year}} Business Dashboard. Hecho para PyMEs en crecimiento."
+  },
+  "landing": {
+    "hero": {
+      "badge": "Business Intelligence para empresas en crecimiento",
+      "headlineLine1": "Entran planillas.",
+      "headlineLine2": "Sale claridad.",
+      "subtitle": "Business Dashboard convierte tus planillas de ventas en KPIs y dashboards listos para decidir — de forma automática, para cada empresa que manejes."
+    },
+    "specs": {
+      "items": [
+        { "value": "2.5s", "label": "máximo para calcular los KPIs de un dataset de 50.000 filas" },
+        { "value": "15MB", "label": "por archivo .csv o .xlsx, validado antes de llegar al almacenamiento" },
+        { "value": "Ilimitadas", "label": "empresas aisladas por cuenta" }
+      ]
+    },
+    "pillars": {
+      "items": [
+        {
+          "title": "Sin reportes manuales",
+          "description": "Subí una planilla y obtené ingresos, ticket promedio y tendencias sin escribir una sola fórmula."
+        },
+        {
+          "title": "Una cuenta, todas tus empresas",
+          "description": "Gestioná el reporting de tantos negocios como manejes, cada uno completamente aislado del resto."
+        },
+        {
+          "title": "Construido sobre una base segura",
+          "description": "Contraseñas cifradas con bcrypt, sesiones JWT de corta duración y archivos que nunca tocan tu base de datos."
+        }
+      ]
+    },
+    "stack": {
+      "heading": "Construido sobre un stack moderno y escalable de forma independiente"
+    },
+    "offerings": {
+      "heading": "Qué hace Business Dashboard",
+      "subheading": "Tres piezas, un solo flujo: ingresá los datos, convertilos en números que importan y mantené cada empresa que manejás perfectamente separada.",
+      "items": [
+        {
+          "title": "Ingesta Inteligente",
+          "description": "Subí archivos .csv o .xlsx de ventas de hasta 15MB. Cada archivo se valida por extensión, tipo MIME y tamaño antes de llegar al almacenamiento."
+        },
+        {
+          "title": "KPIs Automáticos",
+          "description": "Ingresos totales, ticket promedio, producto más vendido y tendencias mensuales — calculados apenas termina de procesarse el dataset."
+        },
+        {
+          "title": "Espacios Multi-Empresa",
+          "description": "Cada empresa que manejás tiene su propio espacio aislado para datasets, KPIs e historial — cambiá entre ellas con un solo clic."
+        }
+      ]
+    },
+    "deepDive": {
+      "ingestion": {
+        "eyebrow": "Ingesta",
+        "title": "Cada carga se valida antes de guardarse",
+        "description": "Los archivos de ventas rara vez llegan limpios. Business Dashboard revisa extensión, tipo MIME y tamaño apenas llega un archivo, para que las cargas inválidas fallen rápido en vez de romper un reporte en silencio.",
+        "bullets": [
+          ".csv y .xlsx, hasta 15MB por archivo",
+          "Los archivos se validan antes de llegar al almacenamiento",
+          "Un estado claro — cargado, procesando, listo o fallido — para cada dataset"
+        ]
+      },
+      "kpis": {
+        "eyebrow": "Análisis",
+        "title": "De filas crudas a un número listo para el directorio",
+        "description": "Cuando un dataset termina de procesarse, los números que realmente importan para decidir se calculan de forma automática — sin fórmulas de planilla, sin tablas dinámicas manuales.",
+        "bullets": [
+          "Ingresos totales, ticket promedio y órdenes totales de un vistazo",
+          "Producto más vendido detectado automáticamente",
+          "Tendencias de ingresos mensuales, listas para graficar"
+        ]
+      },
+      "workspaces": {
+        "eyebrow": "Espacios de trabajo",
+        "title": "Gestioná cada empresa desde una sola cuenta",
+        "description": "Administrá un portafolio de negocios sin mezclar sus datos. Cada empresa mantiene sus propios datasets, moneda e historial, aislada de cualquier otro espacio de trabajo que tengas.",
+        "bullets": [
+          "Creá tantos espacios de empresa como necesites",
+          "Cada uno mantiene su propia moneda, rubro e historial de datasets",
+          "Cambiá entre negocios con un solo clic"
+        ]
+      }
+    },
+    "mockPanels": {
+      "ingestion": {
+        "dropTitle": "Arrastrá un archivo .csv o .xlsx",
+        "dropSubtitle": "hasta 15MB",
+        "upload": "Subir"
+      },
+      "workspace": {
+        "industries": {
+          "retail": "Retail",
+          "wholesale": "Mayorista",
+          "foodBeverage": "Alimentos y Bebidas",
+          "construction": "Construcción"
+        }
+      }
+    },
+    "faq": {
+      "heading": "Preguntas frecuentes",
+      "items": [
+        {
+          "question": "¿Qué es Business Dashboard?",
+          "answer": "Una plataforma de Business Intelligence para pequeñas y medianas empresas. Subís una planilla de ventas y recibís KPIs y gráficos, sin armar una sola fórmula o tabla dinámica."
+        },
+        {
+          "question": "¿Qué formatos de archivo puedo subir?",
+          "answer": "Exportaciones en CSV y Excel (.xlsx), de hasta 15MB por archivo — el formato que ya exportan la mayoría de las herramientas de ventas."
+        },
+        {
+          "question": "¿Puedo gestionar más de un negocio?",
+          "answer": "Sí. Cada empresa que creás es su propio espacio de trabajo aislado, con sus propios datasets, KPIs e historial — cambiá entre ellas desde una sola cuenta."
+        },
+        {
+          "question": "¿Dónde viven mis archivos subidos?",
+          "answer": "En almacenamiento de objetos dedicado, nunca dentro de la base de datos operacional — solo se guardan metadatos (nombre, tamaño, estado) junto a los datos de tu cuenta."
+        }
+      ]
+    },
+    "closingCta": {
+      "eyebrow": "Cuando quieras empezar",
+      "titleLine1": "Mirá tu negocio",
+      "titleLine2": "en números.",
+      "cta": "Creá tu cuenta gratis"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "subtitle": "Bienvenido de nuevo — ingresá tus credenciales para continuar.",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tenés una cuenta?",
+      "signUp": "Registrate"
+    },
+    "register": {
+      "title": "Creá tu cuenta",
+      "subtitle": "Empezá a convertir tus datos de ventas en dashboards en minutos.",
+      "usernameLabel": "Usuario",
+      "fullNameLabel": "Nombre completo",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "submit": "Crear cuenta",
+      "haveAccount": "¿Ya tenés una cuenta?",
+      "logIn": "Iniciar sesión"
+    }
+  },
+  "companies": {
+    "title": "Mis Empresas",
+    "subtitle": "Gestioná cada espacio de trabajo que tengas.",
+    "newCompany": "Nueva empresa",
+    "loading": "Cargando empresas…",
+    "loadError": "No pudimos cargar tus empresas. Intentá de nuevo.",
+    "emptyTitle": "Todavía no tenés empresas",
+    "emptyDescription": "Creá tu primera empresa para empezar a subir datasets y ver KPIs.",
+    "createFirst": "Creá tu primera empresa",
+    "noIndustry": "Sin rubro definido",
+    "currency": "Moneda",
+    "founded": "Fundada"
+  },
+  "companyDetail": {
+    "loadingCompany": "Cargando empresa…",
+    "loadCompanyError": "No pudimos cargar esta empresa.",
+    "datasetsHeading": "Datasets",
+    "loadingDatasets": "Cargando datasets…",
+    "loadDatasetsError": "No pudimos cargar los datasets de esta empresa.",
+    "emptyTitle": "Todavía no hay datasets",
+    "emptyDescription": "Subí un archivo CSV o Excel para verlo listado acá y previsualizar su análisis."
+  },
+  "createCompanyModal": {
+    "title": "Nueva empresa",
+    "nameLabel": "Nombre de la empresa",
+    "industryLabel": "Rubro",
+    "industryPlaceholder": "ej. Retail, Software",
+    "currencyLabel": "Moneda (ISO 4217)",
+    "foundedLabel": "Fecha de fundación",
+    "submit": "Crear empresa"
+  },
+  "datasets": {
+    "status": {
+      "UPLOADING": "Cargando",
+      "UPLOADED": "Cargado",
+      "PROCESSING": "Procesando",
+      "READY": "Listo",
+      "FAILED": "Falló",
+      "DELETED": "Eliminado"
+    },
+    "uploadButton": "Subir dataset",
+    "fileTooLarge": "El archivo supera el límite de 15MB.",
+    "uploadedOn": "{{size}} · Subido el {{date}}"
+  },
+  "analysisModal": {
+    "runningAnalysis": "Ejecutando análisis…",
+    "mockNotice": "El servicio de Analytics todavía no está conectado — estos números son datos de muestra para que puedas previsualizar cómo se verá un análisis terminado.",
+    "monthlyRevenue": "Ingresos mensuales"
+  },
+  "kpis": {
+    "totalRevenue": "Ingresos totales",
+    "averageTicket": "Ticket promedio",
+    "topProduct": "Producto principal",
+    "totalOrders": "Órdenes totales",
+    "revenue": "Ingresos"
+  },
+  "ui": {
+    "checkingSession": "Verificando tu sesión…"
+  },
+  "errors": {
+    "generic": "Algo salió mal. Intentá de nuevo."
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscás no existe.",
+    "backHome": "Volver al inicio"
+  }
+}

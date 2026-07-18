@@ -1,12 +1,11 @@
 import { isAxiosError } from 'axios';
+import i18n from '../i18n';
 import type { ApiFieldError } from '../types/api.types';
 
 interface ParsedApiError {
   message: string;
   fieldErrors: ApiFieldError[];
 }
-
-const FALLBACK_MESSAGE = 'Something went wrong. Please try again.';
 
 export function parseApiError(error: unknown): ParsedApiError {
   if (isAxiosError(error)) {
@@ -21,5 +20,5 @@ export function parseApiError(error: unknown): ParsedApiError {
     }
   }
 
-  return { message: FALLBACK_MESSAGE, fieldErrors: [] };
+  return { message: i18n.t('errors.generic'), fieldErrors: [] };
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { UploadIcon } from './icons';
 import { DatasetStatusBadge } from '../datasets/DatasetStatusBadge';
 
@@ -8,6 +9,8 @@ const ROWS = [
 ];
 
 export function IngestionPanelMock() {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-xl border border-border bg-surface p-5 shadow-2xl shadow-black/20">
       <div className="flex items-center justify-between rounded-lg border border-dashed border-border p-4">
@@ -16,12 +19,14 @@ export function IngestionPanelMock() {
             <UploadIcon width={16} height={16} />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">Drop a .csv or .xlsx file</p>
-            <p className="text-xs text-muted">up to 15MB</p>
+            <p className="text-sm font-medium text-foreground">
+              {t('landing.mockPanels.ingestion.dropTitle')}
+            </p>
+            <p className="text-xs text-muted">{t('landing.mockPanels.ingestion.dropSubtitle')}</p>
           </div>
         </div>
         <span className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
-          Upload
+          {t('landing.mockPanels.ingestion.upload')}
         </span>
       </div>
 

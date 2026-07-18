@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Dataset } from '../../types/dataset.types';
 import { formatDate, formatFileSize } from '../../utils/format';
 import { DatasetStatusBadge } from './DatasetStatusBadge';
@@ -8,6 +9,8 @@ interface DatasetListProps {
 }
 
 export function DatasetList({ datasets, onSelect }: DatasetListProps) {
+  const { t } = useTranslation();
+
   return (
     <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
       {datasets.map((dataset) => (
@@ -20,7 +23,10 @@ export function DatasetList({ datasets, onSelect }: DatasetListProps) {
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-foreground">{dataset.originalFilename}</p>
               <p className="mt-0.5 text-xs text-muted">
-                {formatFileSize(dataset.size)} · Uploaded {formatDate(dataset.createdAt)}
+                {t('datasets.uploadedOn', {
+                  size: formatFileSize(dataset.size),
+                  date: formatDate(dataset.createdAt),
+                })}
               </p>
             </div>
             <DatasetStatusBadge status={dataset.status} />

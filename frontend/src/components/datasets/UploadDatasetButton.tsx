@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useUploadDataset } from '../../hooks/useDatasets';
 import { parseApiError } from '../../utils/getErrorMessage';
 import { Button } from '../ui/Button';
@@ -15,6 +16,7 @@ export function UploadDatasetButton({ companyId }: UploadDatasetButtonProps) {
   const uploadDataset = useUploadDataset(companyId);
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   function handleSelect(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -24,7 +26,7 @@ export function UploadDatasetButton({ companyId }: UploadDatasetButtonProps) {
     setError(null);
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setError('The file exceeds the 15MB limit.');
+      setError(t('datasets.fileTooLarge'));
       return;
     }
 
@@ -47,7 +49,7 @@ export function UploadDatasetButton({ companyId }: UploadDatasetButtonProps) {
         isLoading={uploadDataset.isPending}
         className="cursor-pointer"
       >
-        Upload dataset
+        {t('datasets.uploadButton')}
       </Button>
       {error && <AlertBanner message={error} />}
     </div>

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../constants/routes';
 import { parseApiError } from '../../utils/getErrorMessage';
@@ -11,6 +12,7 @@ import { AlertBanner } from '../../components/ui/AlertBanner';
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,17 +36,15 @@ export function LoginPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-6 py-20">
-      <h1 className="text-2xl font-semibold text-foreground">Log in</h1>
-      <p className="mt-1 text-sm text-foreground-secondary">
-        Welcome back — enter your credentials to continue.
-      </p>
+      <h1 className="text-2xl font-semibold text-foreground">{t('auth.login.title')}</h1>
+      <p className="mt-1 text-sm text-foreground-secondary">{t('auth.login.subtitle')}</p>
 
       <Card className="mt-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {formError && <AlertBanner message={formError} />}
 
           <Input
-            label="Email"
+            label={t('auth.login.emailLabel')}
             type="email"
             autoComplete="email"
             required
@@ -53,7 +53,7 @@ export function LoginPage() {
           />
 
           <Input
-            label="Password"
+            label={t('auth.login.passwordLabel')}
             type="password"
             autoComplete="current-password"
             required
@@ -62,15 +62,15 @@ export function LoginPage() {
           />
 
           <Button type="submit" isLoading={isSubmitting} className="mt-2 cursor-pointer">
-            Log in
+            {t('auth.login.submit')}
           </Button>
         </form>
       </Card>
 
       <p className="mt-6 text-center text-sm text-foreground-secondary">
-        Don't have an account?{' '}
+        {t('auth.login.noAccount')}{' '}
         <Link to={ROUTES.register} className="font-medium text-primary">
-          Sign up
+          {t('auth.login.signUp')}
         </Link>
       </p>
     </div>

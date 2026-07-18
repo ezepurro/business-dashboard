@@ -248,6 +248,21 @@ Tailwind CSS v4 is wired through the `@tailwindcss/vite` plugin — there is no 
 
 ---
 
+# Internationalization (i18n)
+
+The app supports English and Spanish via `i18next` / `react-i18next`, configured in `src/i18n/index.ts`. Language is detected from `localStorage` first, then the browser, and falls back to English.
+
+Rules:
+
+- All user-facing copy lives in `src/i18n/locales/en.json` and `es.json` — never hardcode UI text in a component. Add the key to **both** files in the same change.
+- Components read copy with `const { t } = useTranslation()` and `t('namespace.key')`. Arrays (FAQ items, bullet lists, spec cards) are stored as JSON arrays and read back with `t('key', { returnObjects: true })`.
+- Keys are namespaced by feature/page (`landing.hero.*`, `auth.login.*`, `companies.*`, `datasets.*`...), mirroring the folder a string belongs to. Reuse a key across components instead of duplicating a string (e.g. `companies.noIndustry` is shared by `CompanyCard` and `CompanyDetailPage`).
+- Locale-sensitive formatting (currency, dates, numbers) goes through `utils/format.ts`, which resolves the active i18next language to a locale tag — never call `Intl.*` or `.toLocaleString()` directly in a component.
+- Outside of React (e.g. `utils/getErrorMessage.ts`), use the exported `i18n` singleton's imperative `i18n.t()` instead of the `useTranslation()` hook.
+- Backend-generated messages (validation errors, `ApiError` messages) are **not** localized — the Express API returns them in Spanish regardless of the selected UI language. This is a known gap, not a bug in the frontend.
+
+---
+
 # Backend Architecture
 
 The Express backend intentionally does **not** use a `src/` directory.

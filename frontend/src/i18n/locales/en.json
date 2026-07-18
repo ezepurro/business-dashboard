@@ -1,0 +1,237 @@
+{
+  "common": {
+    "getStartedFree": "Get started free",
+    "logIn": "Log in",
+    "signUp": "Sign up",
+    "logOut": "Log out",
+    "goToMyCompanies": "Go to my companies",
+    "learnMore": "Learn more",
+    "cancel": "Cancel",
+    "close": "Close",
+    "loading": "Loading…"
+  },
+  "nav": {
+    "brand": "Business Dashboard",
+    "myCompanies": "My Companies"
+  },
+  "footer": {
+    "tagline": "Business Intelligence for growing companies — turning spreadsheets into decisions.",
+    "connect": "Connect",
+    "copyright": "© {{year}} Business Dashboard. Built for growing SMBs."
+  },
+  "landing": {
+    "hero": {
+      "badge": "Business Intelligence for growing companies",
+      "headlineLine1": "Spreadsheets in.",
+      "headlineLine2": "Clarity out.",
+      "subtitle": "Business Dashboard turns raw sales spreadsheets into decision-ready KPIs and dashboards — automatically, for every company you run."
+    },
+    "specs": {
+      "items": [
+        { "value": "2.5s", "label": "max to compute KPIs for a 50,000-row dataset" },
+        { "value": "15MB", "label": "per .csv or .xlsx upload, validated before it ever hits storage" },
+        { "value": "Unlimited", "label": "isolated company workspaces per account" }
+      ]
+    },
+    "pillars": {
+      "items": [
+        {
+          "title": "Skip the manual reporting",
+          "description": "Drop in a spreadsheet and get revenue, ticket size and trends without a single formula."
+        },
+        {
+          "title": "One account, every company",
+          "description": "Run reporting for as many businesses as you manage, each fully isolated from the others."
+        },
+        {
+          "title": "Built on a secure core",
+          "description": "bcrypt-hashed credentials, short-lived JWT sessions, and files kept out of your database entirely."
+        }
+      ]
+    },
+    "stack": {
+      "heading": "Built on a modern, independently-scalable stack"
+    },
+    "offerings": {
+      "heading": "What Business Dashboard does",
+      "subheading": "Three pieces, one pipeline: get data in, turn it into numbers that matter, and keep every business you run cleanly separated.",
+      "items": [
+        {
+          "title": "Smart Ingestion",
+          "description": "Upload .csv or .xlsx sales exports up to 15MB. Every file is validated by extension, MIME type and size before it reaches storage."
+        },
+        {
+          "title": "Automatic KPIs",
+          "description": "Total revenue, average ticket, top-selling product and monthly trends — computed the moment a dataset finishes processing."
+        },
+        {
+          "title": "Multi-Company Workspaces",
+          "description": "Every company you manage gets its own isolated space for datasets, KPIs and history — switch between them in one click."
+        }
+      ]
+    },
+    "deepDive": {
+      "ingestion": {
+        "eyebrow": "Ingestion",
+        "title": "Every upload is validated before it's stored",
+        "description": "Sales exports rarely arrive clean. Business Dashboard checks extension, MIME type and size the moment a file lands, so bad uploads fail fast instead of silently breaking a report.",
+        "bullets": [
+          ".csv and .xlsx, up to 15MB per file",
+          "Files are validated before they ever reach storage",
+          "A clear status — uploaded, processing, ready, or failed — for every dataset"
+        ]
+      },
+      "kpis": {
+        "eyebrow": "Analysis",
+        "title": "From raw rows to a boardroom-ready number",
+        "description": "Once a dataset finishes processing, the numbers that actually drive decisions are computed automatically — no spreadsheet formulas, no manual pivot tables.",
+        "bullets": [
+          "Total revenue, average ticket and total orders at a glance",
+          "Top-selling product surfaced automatically",
+          "Monthly revenue trends, ready to chart"
+        ]
+      },
+      "workspaces": {
+        "eyebrow": "Workspaces",
+        "title": "Run every company from one account",
+        "description": "Manage a portfolio of businesses without mixing their data. Each company keeps its own datasets, currency and history, isolated from every other workspace you own.",
+        "bullets": [
+          "Create as many company workspaces as you need",
+          "Each one keeps its own currency, industry and dataset history",
+          "Switch between businesses in a single click"
+        ]
+      }
+    },
+    "mockPanels": {
+      "ingestion": {
+        "dropTitle": "Drop a .csv or .xlsx file",
+        "dropSubtitle": "up to 15MB",
+        "upload": "Upload"
+      },
+      "workspace": {
+        "industries": {
+          "retail": "Retail",
+          "wholesale": "Wholesale",
+          "foodBeverage": "Food & Beverage",
+          "construction": "Construction"
+        }
+      }
+    },
+    "faq": {
+      "heading": "FAQ",
+      "items": [
+        {
+          "question": "What is Business Dashboard?",
+          "answer": "A Business Intelligence platform for small and medium-sized businesses. You upload a sales spreadsheet and get KPIs and charts back, without building a single formula or pivot table."
+        },
+        {
+          "question": "What file formats can I upload?",
+          "answer": "CSV and Excel (.xlsx) exports, up to 15MB per file — the format most sales tools already export."
+        },
+        {
+          "question": "Can I manage more than one business?",
+          "answer": "Yes. Every company you create is its own isolated workspace with its own datasets, KPIs and history — switch between them from one account."
+        },
+        {
+          "question": "Where do my uploaded files live?",
+          "answer": "In dedicated object storage, never inside the operational database — only metadata (filename, size, status) is stored alongside your account data."
+        }
+      ]
+    },
+    "closingCta": {
+      "eyebrow": "Ready when you are",
+      "titleLine1": "See your business",
+      "titleLine2": "in numbers.",
+      "cta": "Create your free account"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Log in",
+      "subtitle": "Welcome back — enter your credentials to continue.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Log in",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Start turning your sales data into dashboards in minutes.",
+      "usernameLabel": "Username",
+      "fullNameLabel": "Full name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "logIn": "Log in"
+    }
+  },
+  "companies": {
+    "title": "My Companies",
+    "subtitle": "Manage every business workspace you own.",
+    "newCompany": "New company",
+    "loading": "Loading companies…",
+    "loadError": "We couldn't load your companies. Please try again.",
+    "emptyTitle": "No companies yet",
+    "emptyDescription": "Create your first company to start uploading datasets and viewing KPIs.",
+    "createFirst": "Create your first company",
+    "noIndustry": "No industry set",
+    "currency": "Currency",
+    "founded": "Founded"
+  },
+  "companyDetail": {
+    "loadingCompany": "Loading company…",
+    "loadCompanyError": "We couldn't load this company.",
+    "datasetsHeading": "Datasets",
+    "loadingDatasets": "Loading datasets…",
+    "loadDatasetsError": "We couldn't load the datasets for this company.",
+    "emptyTitle": "No datasets yet",
+    "emptyDescription": "Upload a CSV or Excel file to see it listed here and preview its analysis."
+  },
+  "createCompanyModal": {
+    "title": "New company",
+    "nameLabel": "Company name",
+    "industryLabel": "Industry",
+    "industryPlaceholder": "e.g. Retail, Software",
+    "currencyLabel": "Currency (ISO 4217)",
+    "foundedLabel": "Founded on",
+    "submit": "Create company"
+  },
+  "datasets": {
+    "status": {
+      "UPLOADING": "Uploading",
+      "UPLOADED": "Uploaded",
+      "PROCESSING": "Processing",
+      "READY": "Ready",
+      "FAILED": "Failed",
+      "DELETED": "Deleted"
+    },
+    "uploadButton": "Upload dataset",
+    "fileTooLarge": "The file exceeds the 15MB limit.",
+    "uploadedOn": "{{size}} · Uploaded {{date}}"
+  },
+  "analysisModal": {
+    "runningAnalysis": "Running analysis…",
+    "mockNotice": "The Analytics Service isn't wired up yet — these numbers are sample data so you can preview how a finished analysis will look.",
+    "monthlyRevenue": "Monthly revenue"
+  },
+  "kpis": {
+    "totalRevenue": "Total revenue",
+    "averageTicket": "Average ticket",
+    "topProduct": "Top product",
+    "totalOrders": "Total orders",
+    "revenue": "Revenue"
+  },
+  "ui": {
+    "checkingSession": "Checking your session…"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist.",
+    "backHome": "Back home"
+  }
+}
