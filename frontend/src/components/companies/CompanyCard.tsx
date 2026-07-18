@@ -13,7 +13,9 @@ export function CompanyCard({ company }: CompanyCardProps) {
     <Link to={ROUTES.companyDetail(company._id)}>
       <Card className="h-full transition hover:border-primary">
         <h3 className="text-base font-semibold text-foreground">{company.name}</h3>
-        <p className="mt-1 text-sm text-foreground-secondary">{company.industry ?? 'No industry set'}</p>
+        <p className="mt-1 text-sm text-foreground-secondary">
+          {company.industry ?? 'No industry set'}
+        </p>
 
         <dl className="mt-4 flex items-center justify-between text-xs text-muted">
           <div>

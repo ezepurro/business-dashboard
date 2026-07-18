@@ -93,7 +93,7 @@ export function RegisterPage() {
             error={fieldError(fieldErrors, 'password')}
           />
 
-          <Button type="submit" isLoading={isSubmitting} className="mt-2">
+          <Button type="submit" isLoading={isSubmitting} className="mt-2 cursor-pointer">
             Create account
           </Button>
         </form>

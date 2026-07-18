@@ -66,3 +66,71 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans);
 }
+
+/*
+ * The marketing landing page (pages/home/LandingPage.tsx) is a fixed-dark
+ * surface — a deliberate exception to the adaptive light/dark theme, same
+ * pattern as most data/infra marketing sites. It reuses the same brand hexes
+ * as the dark-mode block above (kept separate because @media blocks can't be
+ * referenced from a class), just scoped to this subtree instead of the OS
+ * preference. Everything inside still consumes the normal semantic tokens
+ * (bg-background, text-foreground, bg-primary...) — only the values powering
+ * them are pinned here.
+ */
+.theme-landing {
+  --color-background: #040f0f;
+  --color-surface: color-mix(in oklab, #040f0f 80%, white);
+  --color-foreground: color-mix(in oklab, #cdc6a5 80%, white);
+  --color-foreground-secondary: color-mix(in oklab, #cdc6a5 85%, #040f0f);
+  --color-muted: color-mix(in oklab, #cdc6a5 85%, #040f0f);
+  --color-border: color-mix(in oklab, #6f9283 25%, #040f0f);
+
+  --color-primary: #ff5900;
+  --color-primary-foreground: #ffffff;
+
+  --color-chart-1: #ff5900;
+  --color-chart-2: #6f9283;
+  --color-chart-3: #8d9f87;
+  --color-chart-4: #cdc6a5;
+  --color-chart-5: color-mix(in oklab, #cdc6a5 45%, white);
+  --color-chart-6: #eb6834;
+  --color-chart-7: #4a3aa7;
+  --color-chart-8: #e34948;
+
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, -3%, 0) scale(1.08);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.animate-drift {
+  animation: drift 16s ease-in-out infinite alternate;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift,
+  .animate-pulse-soft {
+    animation: none;
+  }
+}

@@ -28,7 +28,9 @@ export function CompaniesPage() {
             Manage every business workspace you own.
           </p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>New company</Button>
+        <Button onClick={() => setIsModalOpen(true)} className="cursor-pointer">
+          New company
+        </Button>
       </div>
 
       <div className="mt-8">
@@ -40,7 +42,11 @@ export function CompaniesPage() {
           <EmptyState
             title="No companies yet"
             description="Create your first company to start uploading datasets and viewing KPIs."
-            action={<Button onClick={() => setIsModalOpen(true)}>Create your first company</Button>}
+            action={
+              <Button onClick={() => setIsModalOpen(true)} className="cursor-pointer">
+                Create your first company
+              </Button>
+            }
           />
         )}
 

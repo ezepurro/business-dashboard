@@ -35,7 +35,9 @@ export function LoginPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col px-6 py-20">
       <h1 className="text-2xl font-semibold text-foreground">Log in</h1>
-      <p className="mt-1 text-sm text-foreground-secondary">Welcome back — enter your credentials to continue.</p>
+      <p className="mt-1 text-sm text-foreground-secondary">
+        Welcome back — enter your credentials to continue.
+      </p>
 
       <Card className="mt-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -59,7 +61,7 @@ export function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Button type="submit" isLoading={isSubmitting} className="mt-2">
+          <Button type="submit" isLoading={isSubmitting} className="mt-2 cursor-pointer">
             Log in
           </Button>
         </form>

@@ -28,8 +28,10 @@ export function Navbar() {
               >
                 My Companies
               </Link>
-              <span className="hidden text-sm text-foreground-secondary sm:inline">{user.name}</span>
-              <Button variant="secondary" onClick={handleLogout}>
+              <span className="hidden text-sm text-foreground-secondary sm:inline">
+                {user.name}
+              </span>
+              <Button variant="secondary" onClick={handleLogout} className="cursor-pointer">
                 Log out
               </Button>
             </>
@@ -44,7 +46,7 @@ export function Navbar() {
                 Log in
               </Link>
               <Link to={ROUTES.register}>
-                <Button>Sign up</Button>
+                <Button className="cursor-pointer">Sign up</Button>
               </Link>
             </>
           )}

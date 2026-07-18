@@ -1,50 +1,16 @@
-import { Link } from 'react-router-dom';
+import { HeroSection } from '../../components/landing/HeroSection';
+import { SpecsStrip } from '../../components/landing/SpecsStrip';
+import { PillarsRow } from '../../components/landing/PillarsRow';
+import { StackStrip } from '../../components/landing/StackStrip';
+import { ProductOfferings } from '../../components/landing/ProductOfferings';
+import { DeepDiveSection } from '../../components/landing/DeepDiveSection';
+import { IngestionPanelMock } from '../../components/landing/IngestionPanelMock';
+import { KpiPanelDemo } from '../../components/landing/KpiPanelDemo';
+import { WorkspacePanelMock } from '../../components/landing/WorkspacePanelMock';
+import { FaqAccordion } from '../../components/landing/FaqAccordion';
+import { ClosingCta } from '../../components/landing/ClosingCta';
+import { ChartIcon, GridIcon, UploadIcon } from '../../components/landing/icons';
 import { useAuth } from '../../hooks/useAuth';
-import { ROUTES } from '../../constants/routes';
-import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
-
-const STEPS = [
-  {
-    title: 'Create your company',
-    description: 'Set up one or more company workspaces to keep every business you manage completely isolated.',
-  },
-  {
-    title: 'Upload your data',
-    description: 'Drop in a CSV or Excel export of your sales — up to 15MB — straight from the tools you already use.',
-  },
-  {
-    title: 'Get instant KPIs',
-    description: 'Total revenue, average ticket, top product and monthly trends, rendered as ready-to-read dashboards.',
-  },
-];
-
-const FEATURES = [
-  {
-    title: 'Multi-company workspaces',
-    description: 'Segment every business into its own isolated space — switch between them without mixing data.',
-  },
-  {
-    title: 'Secure by design',
-    description: 'Passwords hashed with bcrypt and session handling built on short-lived JWT access tokens.',
-  },
-  {
-    title: 'Automatic KPI extraction',
-    description: 'No formulas to write — revenue, average ticket, top-selling product and trends are computed for you.',
-  },
-  {
-    title: 'Decoupled file storage',
-    description: 'Uploaded files live in dedicated object storage, kept separate from your operational database.',
-  },
-  {
-    title: 'Built for growing teams',
-    description: 'List, filter and manage every dataset you upload, with a clear processing status at every step.',
-  },
-  {
-    title: 'Responsive dashboards',
-    description: 'Designed to work equally well on desktop, tablet and mobile.',
-  },
-];
 
 export function LandingPage() {
   const { status } = useAuth();
@@ -52,75 +18,62 @@ export function LandingPage() {
 
   return (
     <div className="flex flex-col">
-      <section className="mx-auto max-w-4xl px-6 py-24 text-center">
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-          Turn spreadsheets into business dashboards, automatically
-        </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-foreground-secondary">
-          Business Dashboard is a Business Intelligence platform for small and medium-sized
-          businesses. Upload your sales data and get interactive KPIs and charts in seconds — no
-          spreadsheets, no manual reporting.
-        </p>
-        <div className="mt-8 flex items-center justify-center gap-3">
-          {isAuthenticated ? (
-            <Link to={ROUTES.companies}>
-              <Button>Go to my companies</Button>
-            </Link>
-          ) : (
-            <>
-              <Link to={ROUTES.register}>
-                <Button>Get started for free</Button>
-              </Link>
-              <Link to={ROUTES.login}>
-                <Button variant="secondary">Log in</Button>
-              </Link>
-            </>
-          )}
-        </div>
-      </section>
+      <div className="theme-landing">
+        <HeroSection />
+      </div>
 
-      <section className="border-t border-border bg-surface py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-2xl font-semibold text-foreground">How it works</h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <Card key={step.title}>
-                <span className="text-sm font-semibold text-primary">Step {index + 1}</span>
-                <h3 className="mt-2 text-base font-semibold text-foreground">{step.title}</h3>
-                <p className="mt-2 text-sm text-foreground-secondary">{step.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <SpecsStrip />
+      <PillarsRow />
+      <StackStrip />
+      <ProductOfferings />
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-center text-2xl font-semibold text-foreground">
-          Everything an SMB needs to understand its numbers
-        </h2>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((feature) => (
-            <Card key={feature.title}>
-              <h3 className="text-base font-semibold text-foreground">{feature.title}</h3>
-              <p className="mt-2 text-sm text-foreground-secondary">{feature.description}</p>
-            </Card>
-          ))}
-        </div>
-      </section>
+      <div className="theme-landing">
+        <DeepDiveSection
+          id="ingestion"
+          icon={UploadIcon}
+          eyebrow="Ingestion"
+          title="Every upload is validated before it's stored"
+          description="Sales exports rarely arrive clean. Business Dashboard checks extension, MIME type and size the moment a file lands, so bad uploads fail fast instead of silently breaking a report."
+          bullets={[
+            '.csv and .xlsx, up to 15MB per file',
+            'Files are validated before they ever reach storage',
+            'A clear status — uploaded, processing, ready, or failed — for every dataset',
+          ]}
+          visual={<IngestionPanelMock />}
+        />
 
-      {!isAuthenticated && (
-        <section className="border-t border-border bg-surface py-16 text-center">
-          <h2 className="text-2xl font-semibold text-foreground">Ready to see your business in numbers?</h2>
-          <p className="mt-2 text-foreground-secondary">
-            Create a free account and upload your first dataset in minutes.
-          </p>
-          <div className="mt-6">
-            <Link to={ROUTES.register}>
-              <Button>Create your account</Button>
-            </Link>
-          </div>
-        </section>
-      )}
+        <DeepDiveSection
+          id="kpis"
+          icon={ChartIcon}
+          eyebrow="Analysis"
+          title="From raw rows to a boardroom-ready number"
+          description="Once a dataset finishes processing, the numbers that actually drive decisions are computed automatically — no spreadsheet formulas, no manual pivot tables."
+          bullets={[
+            'Total revenue, average ticket and total orders at a glance',
+            'Top-selling product surfaced automatically',
+            'Monthly revenue trends, ready to chart',
+          ]}
+          visual={<KpiPanelDemo />}
+          reverse
+        />
+
+        <DeepDiveSection
+          id="workspaces"
+          icon={GridIcon}
+          eyebrow="Workspaces"
+          title="Run every company from one account"
+          description="Manage a portfolio of businesses without mixing their data. Each company keeps its own datasets, currency and history, isolated from every other workspace you own."
+          bullets={[
+            'Create as many company workspaces as you need',
+            'Each one keeps its own currency, industry and dataset history',
+            'Switch between businesses in a single click',
+          ]}
+          visual={<WorkspacePanelMock />}
+        />
+
+        <FaqAccordion />
+        {!isAuthenticated && <ClosingCta />}
+      </div>
     </div>
   );
 }

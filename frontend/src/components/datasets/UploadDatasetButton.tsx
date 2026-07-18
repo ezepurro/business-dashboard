@@ -42,7 +42,11 @@ export function UploadDatasetButton({ companyId }: UploadDatasetButtonProps) {
         className="hidden"
         onChange={handleSelect}
       />
-      <Button onClick={() => inputRef.current?.click()} isLoading={uploadDataset.isPending}>
+      <Button
+        onClick={() => inputRef.current?.click()}
+        isLoading={uploadDataset.isPending}
+        className="cursor-pointer"
+      >
         Upload dataset
       </Button>
       {error && <AlertBanner message={error} />}
