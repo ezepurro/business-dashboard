@@ -12,9 +12,19 @@ const app = express();
 
 app.use(helmet());
 
+const DEV_ORIGIN_PATTERN = /^http:\/\/localhost:517[0-9]$/;
+
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (process.env.NODE_ENV !== 'production' && DEV_ORIGIN_PATTERN.test(origin)) {
+        return callback(null, true);
+      }
+
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   }),
 );

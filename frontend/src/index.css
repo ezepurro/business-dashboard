@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Trying out a brand palette (Toffee Brown / Muted Teal / Dry
+ * Sage / Ink Black) — everything below is still derived from those 5 hexes
+ * via color-mix() rather than invented values, so it's easy to retune.
+ * Components must always consume these tokens (bg-primary, text-foreground,
+ * ...) and never a raw hex, so swapping the palette stays a one-file change.
+ * See CLAUDE.md "Styling — TailwindCSS".
+ */
+@theme {
+  --font-sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-background: color-mix(in oklab, #cdc6a5 18%, white);
+  --color-surface: color-mix(in oklab, #cdc6a5 6%, white);
+  --color-foreground: #040f0f;
+  --color-foreground-secondary: color-mix(in oklab, #040f0f 55%, white);
+  --color-muted: color-mix(in oklab, #040f0f 35%, white);
+  --color-border: color-mix(in oklab, #cdc6a5 40%, white);
+
+  --color-primary: #ff5900;
+  --color-primary-foreground: #ffffff;
+
+  --color-success: #0ca30c;
+  --color-warning: #fab219;
+  --color-danger: #d03b3b;
+
+  --color-chart-1: #916953;
+  --color-chart-2: #6f9283;
+  --color-chart-3: #8d9f87;
+  --color-chart-4: #cdc6a5;
+  --color-chart-5: #040f0f;
+  --color-chart-6: #eb6834;
+  --color-chart-7: #4a3aa7;
+  --color-chart-8: #e34948;
+}
+
+/* Dark mode reuses the same 5 brand hexes, muted/darkened via color-mix
+   instead of brightened, so the palette reads as quiet rather than neon. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #040f0f;
+    --color-surface: color-mix(in oklab, #040f0f 80%, white);
+    --color-foreground: color-mix(in oklab, #cdc6a5 80%, white);
+    --color-foreground-secondary: color-mix(in oklab, #cdc6a5 85%, #040f0f);
+    --color-muted: color-mix(in oklab, #cdc6a5 85%, #040f0f);
+    --color-border: color-mix(in oklab, #6f9283 25%, #040f0f);
+
+    --color-primary: color-mix(in oklab, #ff5900 65%, black);
+    --color-primary-foreground: #ffffff;
+
+    --color-chart-1: color-mix(in oklab, #ff5900 70%, black);
+    --color-chart-2: color-mix(in oklab, #6f9283 70%, black);
+    --color-chart-3: color-mix(in oklab, #8d9f87 70%, black);
+    --color-chart-4: color-mix(in oklab, #cdc6a5 55%, black);
+    --color-chart-5: color-mix(in oklab, #cdc6a5 45%, white);
+    --color-chart-6: color-mix(in oklab, #eb6834 65%, black);
+    --color-chart-7: color-mix(in oklab, #4a3aa7 70%, black);
+    --color-chart-8: color-mix(in oklab, #e34948 65%, black);
+  }
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
