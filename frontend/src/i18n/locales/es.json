@@ -8,6 +8,7 @@
     "learnMore": "Ver más",
     "cancel": "Cancelar",
     "close": "Cerrar",
+    "delete": "Eliminar",
     "loading": "Cargando…"
   },
   "nav": {
@@ -209,7 +210,10 @@
     },
     "uploadButton": "Subir dataset",
     "fileTooLarge": "El archivo supera el límite de 15MB.",
-    "uploadedOn": "{{size}} · Subido el {{date}}"
+    "uploadedOn": "{{size}} · Subido el {{date}}",
+    "deleteAction": "Eliminar dataset",
+    "deleteModalTitle": "Eliminar dataset",
+    "deleteModalMessage": "¿Estás seguro de que querés eliminar \"{{filename}}\"? Esta acción no se puede deshacer — el archivo se eliminará de forma permanente del almacenamiento."
   },
   "analysisModal": {
     "runningAnalysis": "Ejecutando análisis…",

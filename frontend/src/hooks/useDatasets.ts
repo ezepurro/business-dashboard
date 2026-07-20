@@ -20,3 +20,14 @@ export function useUploadDataset(companyId: string) {
     },
   });
 }
+
+export function useDeleteDataset(companyId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (datasetId: string) => datasetService.delete(companyId, datasetId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.datasets(companyId) });
+    },
+  });
+}

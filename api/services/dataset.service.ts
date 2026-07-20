@@ -122,6 +122,10 @@ export class DatasetService {
   async delete(companyId: string, datasetId: string, userId: string) {
     const dataset = await this.findById(companyId, datasetId, userId);
 
+    if (dataset.status !== DatasetStatus.UPLOADED) {
+      throw new ApiError(409, 'Only datasets in "uploaded" status can be deleted.');
+    }
+
     await this.storage.delete(dataset.objectKey);
 
     dataset.status = DatasetStatus.DELETED;

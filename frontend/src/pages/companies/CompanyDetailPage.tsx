@@ -11,6 +11,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { UploadDatasetButton } from '../../components/datasets/UploadDatasetButton';
 import { DatasetList } from '../../components/datasets/DatasetList';
 import { DatasetAnalysisModal } from '../../components/datasets/DatasetAnalysisModal';
+import { DeleteDatasetModal } from '../../components/datasets/DeleteDatasetModal';
 import type { Dataset } from '../../types/dataset.types';
 
 export function CompanyDetailPage() {
@@ -19,6 +20,7 @@ export function CompanyDetailPage() {
   const { data: company, isLoading: isCompanyLoading, isError: isCompanyError } = useCompany(companyId!);
   const { data: datasetsPage, isLoading: areDatasetsLoading, isError: areDatasetsError } = useDatasets(companyId!);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+  const [datasetToDelete, setDatasetToDelete] = useState<Dataset | null>(null);
 
   if (isCompanyLoading) {
     return <Spinner label={t('companyDetail.loadingCompany')} />;
@@ -71,7 +73,11 @@ export function CompanyDetailPage() {
           )}
 
           {!areDatasetsLoading && datasetsPage && datasetsPage.data.length > 0 && (
-            <DatasetList datasets={datasetsPage.data} onSelect={setSelectedDataset} />
+            <DatasetList
+              datasets={datasetsPage.data}
+              onSelect={setSelectedDataset}
+              onDelete={setDatasetToDelete}
+            />
           )}
         </div>
       </div>
@@ -81,6 +87,14 @@ export function CompanyDetailPage() {
           dataset={selectedDataset}
           currency={company.currency}
           onClose={() => setSelectedDataset(null)}
+        />
+      )}
+
+      {datasetToDelete && (
+        <DeleteDatasetModal
+          companyId={company._id}
+          dataset={datasetToDelete}
+          onClose={() => setDatasetToDelete(null)}
         />
       )}
     </div>

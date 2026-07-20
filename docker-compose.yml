@@ -55,6 +55,19 @@ services:
       - ./api:/app
       - /app/node_modules
 
+  analytics:
+    build:
+      context: ./analytics
+    container_name: analytics
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./analytics:/app
+    env_file:
+      - ./analytics/.env
+    depends_on:
+      - minio
+
 volumes:
   mongodb_data:
   minio_data:

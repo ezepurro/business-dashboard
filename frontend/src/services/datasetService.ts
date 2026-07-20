@@ -16,4 +16,8 @@ export const datasetService = {
     const { data } = await api.post<Dataset>(`/companies/${companyId}/datasets`, formData);
     return data;
   },
+
+  async delete(companyId: string, datasetId: string) {
+    await api.delete(`/companies/${companyId}/datasets/${datasetId}`);
+  },
 };

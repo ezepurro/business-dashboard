@@ -236,6 +236,8 @@ export const datasetPaths = {
 
       summary: 'Delete dataset',
 
+      description: 'Only datasets in "UPLOADED" status can be deleted.',
+
       security: [
         {
           BearerAuth: [],
@@ -280,6 +282,10 @@ export const datasetPaths = {
 
         404: {
           $ref: '#/components/responses/NotFound',
+        },
+
+        409: {
+          $ref: '#/components/responses/Conflict',
         },
       },
     },
