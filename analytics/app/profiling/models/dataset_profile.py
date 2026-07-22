@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from app.profiling.models.classified_column import ClassifiedColumn
+from app.profiling.models.dataset_metadata import DatasetMetadata
 
 
 class DatasetProfile(BaseModel):
@@ -18,3 +19,5 @@ class DatasetProfile(BaseModel):
     sample: list[dict]
 
     classified_columns: list[ClassifiedColumn]
+
+    metadata: DatasetMetadata

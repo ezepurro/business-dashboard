@@ -1,5 +1,8 @@
 from pandas import DataFrame
 
+from app.profiling.models.classification_context import ClassificationContext
+from app.profiling.models.column_metadata import ColumnMetadata
+from app.profiling.models.dataset_metadata import DatasetMetadata
 from app.profiling.analyzers.structure_analyzer import StructureAnalyzer
 from app.profiling.analyzers.duplicate_analyzer import DuplicateAnalyzer
 from app.profiling.analyzers.dtype_analyzer import DtypeAnalyzer
@@ -30,6 +33,68 @@ class DatasetProfiler:
 
         structure = self.structure.analyze(df)
 
+        classified_columns = []
+        metadata_columns = []
+
+        for column in df.columns:
+
+            series = df[column]
+
+            context = ClassificationContext(
+
+                column_name=column,
+
+                dtype=str(series.dtype),
+
+                unique_values=int(series.nunique()),
+
+                null_percentage=round(float(series.isna().mean()), 3),
+
+                sample_values=[
+                    str(value)
+                    for value in series.dropna().head(5).tolist()
+                ]
+
+            )
+
+            classification = self.classifier.classify(context)
+
+            classified_columns.append(classification)
+
+            metadata_columns.append(
+
+                ColumnMetadata(
+
+                    name=column,
+
+                    semantic_type=classification.semantic_type or "unknown",
+
+                    confidence=classification.confidence,
+
+                    dtype=context.dtype,
+
+                    nullable=context.null_percentage > 0,
+
+                    null_percentage=context.null_percentage,
+
+                    unique_values=context.unique_values,
+
+                    sample_values=context.sample_values
+
+                )
+
+            )
+
+        metadata = DatasetMetadata(
+
+            rows=structure["rows"],
+
+            columns=structure["columns"],
+
+            data_dictionary=metadata_columns
+
+        )
+
         return DatasetProfile(
 
             rows=structure["rows"],
@@ -44,5 +109,8 @@ class DatasetProfiler:
 
             sample=self.sample.analyze(df),
 
-            classified_columns=self.classifier.classify(df)
+            classified_columns=classified_columns,
+
+            metadata=metadata
+
         )

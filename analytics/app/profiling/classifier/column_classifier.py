@@ -1,52 +1,61 @@
-from pandas import DataFrame
+from app.profiling.classifier.scorers.name_scorer import NameScorer
+from app.profiling.classifier.scorers.sample_scorer import SampleScorer
+from app.profiling.classifier.scorers.dtype_scorer import DTypeScorer
+from app.profiling.classifier.scorers.cardinality_scorer import CardinalityScorer
+from app.profiling.classifier.scorers.score_combiner import ScoreCombiner
 
-from app.profiling.classifier.column_normalizer import ColumnNormalizer
-from app.profiling.classifier.confidence_scorer import ConfidenceScorer
-from app.profiling.classifier.dictionaries.column_aliases import COLUMN_ALIASES
+from app.profiling.models.classification_context import ClassificationContext
 from app.profiling.models.classified_column import ClassifiedColumn
 
 
 class ColumnClassifier:
 
+    def __init__(self):
+
+        self.name = NameScorer()
+        self.sample = SampleScorer()
+        self.dtype = DTypeScorer()
+        self.cardinality = CardinalityScorer()
+
+        self.combiner = ScoreCombiner()
+
     def classify(
         self,
-        df: DataFrame
-    ) -> list[ClassifiedColumn]:
+        context: ClassificationContext
+    ) -> ClassifiedColumn:
 
-        classified_columns: list[ClassifiedColumn] = []
+        result = self.combiner.combine(
 
-        for column in df.columns:
+            [
 
-            normalized = ColumnNormalizer.normalize(column)
+                self.name.score(
+                    context.column_name
+                ),
 
-            best_type = None
-            best_alias = None
-            best_score = 0.0
+                self.sample.score(
+                    context
+                ),
 
-            for semantic_type, aliases in COLUMN_ALIASES.items():
+                self.dtype.score(
+                    context
+                ),
 
-                for alias in aliases:
-
-                    score = ConfidenceScorer.score(
-                        normalized,
-                        alias
-                    )
-
-                    if score > best_score:
-
-                        best_score = score
-                        best_type = semantic_type
-                        best_alias = alias
-
-            classified_columns.append(
-
-                ClassifiedColumn(
-                    original_name=column,
-                    semantic_type=best_type,
-                    confidence=best_score,
-                    matched_term=best_alias
+                self.cardinality.score(
+                    context
                 )
 
-            )
+            ]
 
-        return classified_columns
+        )
+
+        return ClassifiedColumn(
+
+            original_name=context.column_name,
+
+            semantic_type=result.semantic_type,
+
+            confidence=result.confidence,
+
+            matched_term=result.matched_term
+
+        )
