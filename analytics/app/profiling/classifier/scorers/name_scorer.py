@@ -1,7 +1,7 @@
 from app.profiling.classifier.column_normalizer import ColumnNormalizer
 from app.profiling.classifier.confidence_scorer import ConfidenceScorer
 from app.profiling.classifier.dictionaries.column_aliases import COLUMN_ALIASES
-
+from app.profiling.models.classification_context import ClassificationContext
 from app.profiling.models.scorer_result import ScorerResult
 
 
@@ -9,10 +9,12 @@ class NameScorer:
 
     def score(
         self,
-        column_name: str
+        context: ClassificationContext
     ) -> ScorerResult:
 
-        normalized = ColumnNormalizer.normalize(column_name)
+        normalized = ColumnNormalizer.normalize(
+            context.column_name
+        )
 
         best_type = None
         best_alias = None

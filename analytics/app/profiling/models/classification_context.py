@@ -11,6 +11,8 @@ class ClassificationContext(BaseModel):
 
     unique_values: int
 
+    total_rows: int
+
     null_percentage: float
 
     sample_values: list[Any]

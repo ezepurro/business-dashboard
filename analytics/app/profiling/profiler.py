@@ -48,6 +48,8 @@ class DatasetProfiler:
 
                 unique_values=int(series.nunique()),
 
+                total_rows=len(df),
+
                 null_percentage=round(float(series.isna().mean()), 3),
 
                 sample_values=[
