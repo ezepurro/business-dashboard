@@ -13,6 +13,8 @@ from app.profiling.classifier.column_classifier import ColumnClassifier
 
 from app.profiling.models.dataset_profile import DatasetProfile
 
+from app.quality.quality_engine import QualityEngine
+
 
 class DatasetProfiler:
 
@@ -25,6 +27,8 @@ class DatasetProfiler:
         self.sample = SampleAnalyzer()
 
         self.classifier = ColumnClassifier()
+
+        self.quality = QualityEngine()
 
     def profile(
         self,
@@ -97,6 +101,8 @@ class DatasetProfiler:
 
         )
 
+        quality = self.quality.analyze(df)
+
         return DatasetProfile(
 
             rows=structure["rows"],
@@ -113,6 +119,8 @@ class DatasetProfiler:
 
             classified_columns=classified_columns,
 
-            metadata=metadata
+            metadata=metadata,
+
+            quality=quality
 
         )

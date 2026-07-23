@@ -16,6 +16,7 @@
 4. [Modelado de Sistemas (Diagramas PlantUML)](#4-modelado-de-sistemas-diagramas-plantuml)
 5. [Modelos de Datos y Contratos de API](#5-modelos-de-datos-y-contratos-de-api)
 6. [Decisiones Arquitectónicas: Almacenamiento y Procesamiento de Datasets](#6-decisiones-arquitectónicas-almacenamiento-y-procesamiento-de-datasets)
+7. [Tratamiento y Perfilado de Datos en Analytics](#7-tratamiento-y-perfilado-de-datos-en-analytics)
 
 ---
 
@@ -449,3 +450,125 @@ Dos comportamientos quedaron definidos como punto de partida, sujetos a revisió
 
 - **Si la notificación a FastAPI falla** (servicio caído, timeout) después de que el archivo ya se escribió en MinIO, el dataset se marca `failed` con `errorMessage` y la carga responde `201` igualmente — el archivo está a salvo, pero el procesamiento no arrancó. Alternativa descartada por ahora: devolver `502` al cliente, que deja el archivo en MinIO sin una vía simple de vincularlo si no se hace rollback.
 - **La carga usa buffer en memoria (`multer.memoryStorage`)** para la v1, consistente con el resto de la codebase. Bajo cargas concurrentes de archivos grandes, escribir en streaming directo hacia MinIO es la mejora natural — no bloqueante para esta versión.
+
+---
+
+## 7. Tratamiento y Perfilado de Datos en Analytics
+
+### 7.1 Flujo de Tratamiento Interno
+
+El módulo de Analytics trabaja sobre el archivo ya almacenado en MinIO y no sobre el request original. El flujo vigente es el siguiente:
+
+- `ProcessService` recibe únicamente las coordenadas del dataset (`datasetId`, `bucket`, `objectKey`).
+- `DatasetLoader` descarga el objeto desde MinIO y determina el tratamiento según la extensión física.
+- Si el archivo es `.csv`, se carga directamente en `pandas`.
+- Si el archivo es `.xlsx` o `.xls`, se ejecuta una inspección previa del workbook para identificar la hoja más probable y la fila de cabecera real.
+- Luego se normaliza el `DataFrame` con `DataFrameCleaner`.
+- Finalmente, `DatasetProfiler` construye el perfil estructural y semántico del dataset, incluyendo el diccionario de datos.
+
+El objetivo de este pipeline es reducir la dependencia de plantillas fijas y tolerar variaciones comunes en archivos operativos reales, donde la cabecera no siempre está en la primera fila y la hoja útil no siempre es la primera del libro.
+
+### 7.2 Sistema de Puntuación Estructural del Workbook
+
+Para archivos Excel, la selección de la hoja se resuelve mediante un esquema de score por candidato. Cada hoja recibe una puntuación total compuesta por cuatro señales:
+
+- **Cantidad de filas:** favorece hojas con mayor volumen de datos.
+- **Cantidad de columnas:** favorece estructuras tabulares más densas.
+- **Confianza de cabecera:** pondera la probabilidad de haber encontrado una fila de títulos válida.
+- **Penalización por hojas triviales:** reduce el score de hojas demasiado pequeñas.
+
+En la implementación actual, `SheetDetector` calcula un `SheetInspection` con `total_score`, `row_score`, `column_score`, `header_score` y `penalty_score`. La hoja ganadora es la de mayor `total_score`.
+
+La detección de cabecera también usa score por fila. `HeaderDetector` evalúa cada fila según:
+
+- presencia de celdas no vacías,
+- cantidad de celdas textuales,
+- penalización por celdas numéricas,
+- cantidad de valores únicos.
+
+La fila con el mayor puntaje se toma como cabecera y se devuelve con una confianza normalizada. En la práctica, esto permite ubicar encabezados que están desplazados hacia abajo dentro de la hoja, algo frecuente en planillas exportadas manualmente o generadas por terceros.
+
+### 7.3 Perfilado Semántico y Diccionario de Datos
+
+Una vez estructurado el `DataFrame`, el módulo de perfilado construye un contexto por columna con:
+
+- nombre original,
+- tipo de dato inferido,
+- cantidad de valores únicos,
+- cantidad total de filas,
+- porcentaje de nulos,
+- muestra de valores no vacíos.
+
+Con ese contexto, `ColumnClassifier` combina cinco familias de señales:
+
+- `NameScorer`, basado en alias de negocio como ventas, fecha, cliente, producto y cantidad.
+- `SampleScorer`, que detecta patrones típicos en los valores de muestra, como booleanos, emails, teléfonos, fechas y números.
+- `SemanticSampleScorer`, que aplica detectores especializados por semántica sobre la muestra de valores.
+- `DTypeScorer`, que usa el tipo de dato de `pandas` como señal estructural.
+- `CardinalityScorer`, que pondera unicidad y cardinalidad para distinguir booleanos, categóricos e identificadores.
+
+`ScoreCombiner` agrupa los resultados, suma las confianzas por tipo semántico y selecciona la mejor hipótesis. El resultado final se materializa en `ClassifiedColumn` y en `ColumnMetadata`, que conforman el `data_dictionary` del `DatasetMetadata`.
+
+Los tipos semánticos ya contemplados incluyen, entre otros, `sales`, `date`, `customer`, `product`, `quantity`, `boolean`, `email`, `phone`, `numeric_measure`, `categorical`, `identifier`, `document`, `currency`, `location`, `status`, `payment_method`, `gender`, `country`, `channel`, `color`, `size`, `postal_code` y `product_code`.
+
+Si ninguna señal alcanza una hipótesis suficiente, la columna se conserva con `semantic_type = "unknown"`, evitando inventar significado sobre datos ambiguos.
+
+### 7.4 Diagrama de Secuencias (Tratamiento Interno del Archivo)
+
+> El archivo se resuelve primero por extensión. El camino de Excel incluye inspección de workbook y detección de cabecera; el de CSV salta directamente a la carga tabular.
+
+```plantuml
+@startuml
+autonumber
+participant "FastAPI Engine" as Engine
+participant "MinIO" as Storage
+participant "DatasetLoader" as Loader
+participant "WorkbookInspector" as Inspector
+participant "SheetDetector" as Sheet
+participant "HeaderDetector" as Header
+participant "DataFrameCleaner" as Cleaner
+participant "DatasetProfiler" as Profiler
+participant "ColumnClassifier" as Classifier
+participant "ScoreCombiner" as Combiner
+
+Engine -> Storage: getObject(bucket, objectKey)
+activate Storage
+Storage --> Engine: Stream del archivo
+deactivate Storage
+
+Engine -> Loader: load_dataframe(bucket, objectKey)
+activate Loader
+
+alt archivo CSV
+  Loader -> Loader: pandas.read_csv(BytesIO(file_bytes))
+else archivo Excel
+  Loader -> Inspector: inspect(file_bytes)
+  activate Inspector
+  Inspector -> Sheet: detect(workbook)
+  activate Sheet
+  Sheet -> Header: detect(worksheet_rows)
+  Header --> Sheet: HeaderDetection(header_row, confidence)
+  Sheet --> Inspector: SheetInspection(total_score, ...)
+  deactivate Sheet
+  Inspector --> Loader: WorkbookInspection(sheet, header, rows)
+  deactivate Inspector
+  Loader -> Loader: pandas.read_excel(sheet_name, header)
+  Loader -> Cleaner: clean(df)
+  Cleaner --> Loader: df normalizado
+end
+
+Loader --> Engine: DataFrame
+deactivate Loader
+
+Engine -> Profiler: profile(df)
+activate Profiler
+Profiler -> Classifier: classify(column_context)
+activate Classifier
+Classifier -> Combiner: combine(results)
+Combiner --> Classifier: ScorerResult
+Classifier --> Profiler: ClassifiedColumn
+deactivate Classifier
+Profiler --> Engine: DatasetProfile
+deactivate Profiler
+@enduml
+```
