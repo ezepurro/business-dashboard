@@ -9,6 +9,7 @@ from app.ingestion.cleaning.dataframe_cleaner import DataFrameCleaner
 
 
 class DatasetLoader:
+
     def __init__(self):
         self.minio = MinIOClient()
 
@@ -27,7 +28,6 @@ class DatasetLoader:
 
             file_bytes = response.read()
 
-
         finally:
 
             response.close()
@@ -36,19 +36,31 @@ class DatasetLoader:
         extension = Path(object_key).suffix.lower()
 
         if extension == ".csv":
-            return pd.read_csv(BytesIO(file_bytes))
+
+            df = pd.read_csv(
+                BytesIO(file_bytes)
+            )
+
+            return DataFrameCleaner.clean(df)
 
         if extension in [".xlsx", ".xls"]:
 
-            inspection = WorkbookInspector().inspect(file_bytes)
+            inspection = WorkbookInspector().inspect(
+                file_bytes
+            )
 
             print(
                 f"""
-                Workbook inspection:
+                Workbook inspection
+                -------------------
                 Sheet: {inspection.sheet.sheet_name}
-                Sheet score: {inspection.sheet.total_score}
+                Sheet score: {inspection.sheet.total_score:.2f}
+
                 Header row: {inspection.header.header_row + 1}
                 Header confidence: {inspection.header.confidence:.2f}
+
+                Footer row: {inspection.footer.footer_row + 1}
+                Footer confidence: {inspection.footer.confidence:.2f}
                 """
             )
 
@@ -58,10 +70,21 @@ class DatasetLoader:
                 header=inspection.header.header_row
             )
 
-            # Limpiar el dataframe
-            cleaner = DataFrameCleaner()
-            df = cleaner.clean(df)
+            # Eliminar el footer detectado
+            footer_index = (
+                inspection.footer.footer_row
+                - inspection.header.header_row
+                - 1
+            )
+
+            if 0 <= footer_index < len(df):
+
+                df = df.iloc[:footer_index]
+
+            df = DataFrameCleaner.clean(df)
 
             return df
 
-        raise ValueError(f"Unsupported file format: {extension}")
+        raise ValueError(
+            f"Unsupported file format: {extension}"
+        )

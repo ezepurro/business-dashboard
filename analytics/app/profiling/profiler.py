@@ -14,6 +14,7 @@ from app.profiling.classifier.column_classifier import ColumnClassifier
 from app.profiling.models.dataset_profile import DatasetProfile
 
 from app.quality.quality_engine import QualityEngine
+from app.cleaning.cleaning_engine import CleaningEngine
 
 
 class DatasetProfiler:
@@ -29,6 +30,8 @@ class DatasetProfiler:
         self.classifier = ColumnClassifier()
 
         self.quality = QualityEngine()
+
+        self.cleaning = CleaningEngine()
 
     def profile(
         self,
@@ -103,6 +106,8 @@ class DatasetProfiler:
 
         quality = self.quality.analyze(df)
 
+        cleaning = self.cleaning.analyze(df)
+
         return DatasetProfile(
 
             rows=structure["rows"],
@@ -121,6 +126,8 @@ class DatasetProfiler:
 
             metadata=metadata,
 
-            quality=quality
+            quality=quality,
+
+            cleaning=cleaning,
 
         )

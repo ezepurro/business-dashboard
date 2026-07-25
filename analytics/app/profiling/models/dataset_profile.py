@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from app.profiling.models.classified_column import ClassifiedColumn
 from app.profiling.models.dataset_metadata import DatasetMetadata
 from app.quality.models.quality_report import QualityReport
+from app.cleaning.models.cleaning_report import CleaningReport
 
 
 class DatasetProfile(BaseModel):
@@ -24,3 +25,5 @@ class DatasetProfile(BaseModel):
     metadata: DatasetMetadata
 
     quality: QualityReport
+
+    cleaning: CleaningReport
