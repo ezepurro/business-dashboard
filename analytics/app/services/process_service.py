@@ -1,6 +1,7 @@
 from app.profiling.profiler import DatasetProfiler
 from app.ingestion.dataset_loader import DatasetLoader
 from app.cleaning.cleaning_engine import CleaningEngine
+from app.transformation.transformation_engine import TransformationEngine
 
 
 class ProcessService:
@@ -9,6 +10,7 @@ class ProcessService:
         self.loader = DatasetLoader()
         self.cleaning = CleaningEngine()
         self.profiler = DatasetProfiler()
+        self.transformation = TransformationEngine()
 
     async def process(
         self,
@@ -34,5 +36,13 @@ class ProcessService:
             cleaning_report=cleaning_report
         )
 
-        # 4. Mostrar el resultado (temporalmente)
+        # 4. Transformar el dataset usando metadata del perfil
+        transformation_report = self.transformation.transform(
+            cleaning_report.dataframe,
+            profile.metadata
+        )
+
+        profile.transformation = transformation_report
+
+        # 5. Mostrar el resultado (temporalmente)
         print(profile.model_dump_json(indent=2))

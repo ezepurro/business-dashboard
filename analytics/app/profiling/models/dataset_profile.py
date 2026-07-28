@@ -4,6 +4,7 @@ from app.profiling.models.classified_column import ClassifiedColumn
 from app.profiling.models.dataset_metadata import DatasetMetadata
 from app.quality.models.quality_report import QualityReport
 from app.cleaning.models.cleaning_report import CleaningReport
+from app.transformation.models.transformation_report import TransformationReport
 
 
 class DatasetProfile(BaseModel):
@@ -27,3 +28,5 @@ class DatasetProfile(BaseModel):
     quality: QualityReport
 
     cleaning: CleaningReport
+
+    transformation: TransformationReport | None = None
