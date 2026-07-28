@@ -1,20 +1,33 @@
+import re
+
 from pandas import DataFrame
 from pandas.api.types import is_string_dtype
-
-import re
 
 from app.cleaning.analyzers.base_cleaner import BaseCleaner
 from app.cleaning.models.cleaning_result import CleaningResult
 
 
-def _normalize_text(value):
-    if not isinstance(value, str):
-        return value
+TEXT_NORMALIZATIONS: dict[str, str] = {
+    "si": "Si",
+    "sí": "Si",
+    "no": "No",
+    "true": "True",
+    "false": "False",
+    "mercado pago": "Mercado Pago",
+}
 
-    return re.sub(r"\s+", " ", value).strip()
+
+def _normalize_value(value: str) -> str:
+    compact = re.sub(r"\s+", " ", value).strip()
+    lower = compact.casefold()
+
+    if lower in TEXT_NORMALIZATIONS:
+        return TEXT_NORMALIZATIONS[lower]
+
+    return compact.title()
 
 
-class TextCleaner(BaseCleaner):
+class ValueNormalizationCleaner(BaseCleaner):
 
     def clean(
         self,
@@ -31,10 +44,11 @@ class TextCleaner(BaseCleaner):
             if not (series.dtype == object or is_string_dtype(series)):
                 continue
 
-            normalized = series.map(_normalize_text)
+            normalized = series.map(
+                lambda value: _normalize_value(value) if isinstance(value, str) else value
+            )
 
             changed_mask = series.ne(normalized) & series.notna()
-
             affected_rows = int(changed_mask.sum())
 
             if affected_rows == 0:
@@ -44,14 +58,13 @@ class TextCleaner(BaseCleaner):
 
             actions.append(
                 self.build_action(
-                    action="trim_and_normalize_spaces",
+                    action="normalize_text_values",
                     column=column,
-                    description="Leading, trailing, or repeated spaces were normalized.",
-                    confidence=0.98,
+                    description="Text values were normalized without changing their data type.",
+                    confidence=0.93,
                     estimated_affected_rows=affected_rows,
-                    recommendation="Keep a single space between words and trim boundary spaces.",
+                    recommendation="Keep textual labels consistent before semantic transformation.",
                 )
-
             )
 
         return self.build_result(df, actions)

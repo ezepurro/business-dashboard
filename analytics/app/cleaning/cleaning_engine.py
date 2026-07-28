@@ -7,6 +7,7 @@ from app.cleaning.analyzers.footer_cleaner import FooterCleaner
 from app.cleaning.analyzers.missing_cleaner import MissingCleaner
 from app.cleaning.analyzers.duplicate_cleaner import DuplicateCleaner
 from app.cleaning.analyzers.text_cleaner import TextCleaner
+from app.cleaning.analyzers.value_normalization_cleaner import ValueNormalizationCleaner
 from app.cleaning.analyzers.unnamed_column_cleaner import UnnamedColumnCleaner
 
 from app.cleaning.models.cleaning_report import CleaningReport
@@ -22,6 +23,7 @@ class CleaningEngine:
         self.cleaners = cleaners or [
             TextCleaner(),
             MissingCleaner(),
+            ValueNormalizationCleaner(),
             UnnamedColumnCleaner(),
             EmptyRowCleaner(),
             EmptyColumnCleaner(),

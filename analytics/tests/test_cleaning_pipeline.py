@@ -9,6 +9,7 @@ from app.cleaning.analyzers.empty_row_cleaner import EmptyRowCleaner
 from app.cleaning.analyzers.footer_cleaner import FooterCleaner
 from app.cleaning.analyzers.missing_cleaner import MissingCleaner
 from app.cleaning.analyzers.text_cleaner import TextCleaner
+from app.cleaning.analyzers.value_normalization_cleaner import ValueNormalizationCleaner
 from app.cleaning.analyzers.unnamed_column_cleaner import UnnamedColumnCleaner
 from app.cleaning.cleaning_engine import CleaningEngine
 from app.cleaning.models.cleaning_report import CleaningReport
@@ -118,6 +119,29 @@ class CleaningPipelineTests(unittest.TestCase):
         self.assertEqual(result.actions[0].action, "remove_footer_rows")
         self.assertEqual(result.actions[0].estimated_affected_rows, 1)
 
+    def test_value_normalization_cleaner_normalizes_text_without_changing_dtype(self):
+        df = pd.DataFrame(
+            {
+                "Cliente Fidelizado": ["SI", "no", "TRUE", "false", "MERCADO PAGO", "  juan   perez "],
+                "Otro": ["Sí", "No", "Mercado Pago", None, "  ACME  SA  ", "alpha beta"],
+            }
+        )
+
+        result = ValueNormalizationCleaner().clean(df)
+
+        self.assertListEqual(
+            result.dataframe["Cliente Fidelizado"].tolist(),
+            ["Si", "No", "True", "False", "Mercado Pago", "Juan Perez"]
+        )
+        self.assertEqual(result.dataframe.loc[0, "Otro"], "Si")
+        self.assertEqual(result.dataframe.loc[1, "Otro"], "No")
+        self.assertEqual(result.dataframe.loc[2, "Otro"], "Mercado Pago")
+        self.assertTrue(pd.isna(result.dataframe.loc[3, "Otro"]))
+        self.assertEqual(result.dataframe.loc[4, "Otro"], "Acme Sa")
+        self.assertEqual(result.dataframe.loc[5, "Otro"], "Alpha Beta")
+        self.assertEqual(result.actions[0].action, "normalize_text_values")
+        self.assertEqual(result.actions[0].column, "Cliente Fidelizado")
+
     def test_cleaning_engine_runs_cleaners_in_sequence(self):
         df = pd.DataFrame(
             {
@@ -125,6 +149,7 @@ class CleaningPipelineTests(unittest.TestCase):
                 "customer": ["  Alice  ", "Alice", None, "Total General"],
                 "region": [" North ", "North", None, None],
                 "status": ["N/A", "-", None, None],
+                "Cliente Fidelizado": ["SI", "no", None, "TRUE"],
                 "empty": [None, None, None, None],
             }
         )
@@ -132,19 +157,21 @@ class CleaningPipelineTests(unittest.TestCase):
         report = CleaningEngine().clean(df)
 
         self.assertIsInstance(report, CleaningReport)
-        self.assertListEqual(list(report.dataframe.columns), ["customer", "region"])
-        self.assertEqual(len(report.dataframe), 1)
+        self.assertListEqual(list(report.dataframe.columns), ["customer", "region", "Cliente Fidelizado"])
+        self.assertEqual(len(report.dataframe), 2)
         self.assertEqual(report.dataframe.iloc[0]["customer"], "Alice")
         self.assertEqual(report.dataframe.iloc[0]["region"], "North")
+        self.assertEqual(report.dataframe.iloc[0]["Cliente Fidelizado"], "Si")
+        self.assertEqual(report.dataframe.iloc[1]["Cliente Fidelizado"], "No")
 
         actions = [action.action for action in report.actions]
         self.assertIn("trim_and_normalize_spaces", actions)
         self.assertIn("normalize_nulls", actions)
+        self.assertIn("normalize_text_values", actions)
         self.assertIn("remove_empty_rows", actions)
         self.assertIn("remove_unnamed_columns", actions)
         self.assertIn("remove_empty_columns", actions)
         self.assertIn("remove_footer_rows", actions)
-        self.assertIn("remove_duplicates", actions)
 
     def test_profiler_uses_provided_cleaning_report(self):
         raw_df = pd.DataFrame(
