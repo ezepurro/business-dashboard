@@ -1,8 +1,5 @@
-from pydantic import BaseModel
-
-from app.cleaning.models.cleaning_action import CleaningAction
+from app.cleaning.models.cleaning_result import CleaningResult
 
 
-class CleaningReport(BaseModel):
-
-    actions: list[CleaningAction]
+class CleaningReport(CleaningResult):
+    pass

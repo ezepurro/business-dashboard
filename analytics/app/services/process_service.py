@@ -1,11 +1,13 @@
 from app.profiling.profiler import DatasetProfiler
 from app.ingestion.dataset_loader import DatasetLoader
+from app.cleaning.cleaning_engine import CleaningEngine
 
 
 class ProcessService:
 
     def __init__(self):
         self.loader = DatasetLoader()
+        self.cleaning = CleaningEngine()
         self.profiler = DatasetProfiler()
 
     async def process(
@@ -23,8 +25,14 @@ class ProcessService:
             object_key=object_key
         )
 
-        # 2. Generar el perfil del dataset
-        profile = self.profiler.profile(df)
+        # 2. Limpiar el dataset con el pipeline seguro
+        cleaning_report = self.cleaning.clean(df)
 
-        # 3. Mostrar el resultado (temporalmente)
+        # 3. Generar el perfil sobre el DataFrame ya limpio
+        profile = self.profiler.profile(
+            cleaning_report.dataframe,
+            cleaning_report=cleaning_report
+        )
+
+        # 4. Mostrar el resultado (temporalmente)
         print(profile.model_dump_json(indent=2))

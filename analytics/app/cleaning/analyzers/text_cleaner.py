@@ -1,56 +1,57 @@
 from pandas import DataFrame
+from pandas.api.types import is_string_dtype
+
+import re
 
 from app.cleaning.analyzers.base_cleaner import BaseCleaner
-from app.cleaning.models.cleaning_action import CleaningAction
+from app.cleaning.models.cleaning_result import CleaningResult
+
+
+def _normalize_text(value):
+    if not isinstance(value, str):
+        return value
+
+    return re.sub(r"\s+", " ", value).strip()
 
 
 class TextCleaner(BaseCleaner):
 
-    def analyze(
+    def clean(
         self,
         df: DataFrame
-    ) -> list[CleaningAction]:
+    ) -> CleaningResult:
 
+        df = df.copy()
         actions = []
 
-        for column in df.select_dtypes(include="object"):
+        for column in df.columns:
 
-            values = df[column].dropna().astype(str)
+            series = df[column]
 
-            if values.empty:
+            if not (series.dtype == object or is_string_dtype(series)):
                 continue
 
-            mask = (
-                values.str.startswith(" ")
-                |
-                values.str.endswith(" ")
-            )
+            normalized = series.map(_normalize_text)
 
-            affected = int(mask.sum())
+            changed_mask = series.ne(normalized) & series.notna()
 
-            if affected == 0:
+            affected_rows = int(changed_mask.sum())
+
+            if affected_rows == 0:
                 continue
+
+            df[column] = normalized
 
             actions.append(
-
-                CleaningAction(
-
-                    action="trim_whitespace",
-
+                self.build_action(
+                    action="trim_and_normalize_spaces",
                     column=column,
-
-                    description="Leading or trailing spaces detected.",
-
+                    description="Leading, trailing, or repeated spaces were normalized.",
                     confidence=0.98,
-
-                    automatic=True,
-
-                    estimated_affected_rows=affected,
-
-                    recommendation="Trim leading and trailing spaces."
-
+                    estimated_affected_rows=affected_rows,
+                    recommendation="Keep a single space between words and trim boundary spaces.",
                 )
 
             )
-
+        return self.build_result(df, actions)
         return actions

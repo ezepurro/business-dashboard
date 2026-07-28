@@ -1,37 +1,34 @@
 from pandas import DataFrame
 
 from app.cleaning.analyzers.base_cleaner import BaseCleaner
-from app.cleaning.models.cleaning_action import CleaningAction
+from app.cleaning.models.cleaning_result import CleaningResult
 
 
 class DuplicateCleaner(BaseCleaner):
 
-    def analyze(
+    def clean(
         self,
         df: DataFrame
-    ) -> list[CleaningAction]:
+    ) -> CleaningResult:
 
-        duplicated = int(df.duplicated().sum())
+        df = df.copy()
+        duplicated_mask = df.duplicated()
+        duplicated_rows = int(duplicated_mask.sum())
 
-        if duplicated == 0:
-            return []
+        if duplicated_rows == 0:
+            return self.build_result(df, [])
 
-        return [
+        cleaned = df.loc[~duplicated_mask].copy()
 
-            CleaningAction(
-
-                action="remove_duplicates",
-
-                description=f"{duplicated} duplicated rows detected.",
-
-                confidence=1.0,
-
-                automatic=True,
-
-                estimated_affected_rows=duplicated,
-
-                recommendation="Remove duplicated rows."
-
-            )
-
-        ]
+        return self.build_result(
+            cleaned,
+            [
+                self.build_action(
+                    action="remove_duplicates",
+                    description=f"Removed {duplicated_rows} duplicated rows.",
+                    confidence=1.0,
+                    estimated_affected_rows=duplicated_rows,
+                    recommendation="Remove exact duplicated rows.",
+                )
+            ]
+        )

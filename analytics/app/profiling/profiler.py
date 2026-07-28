@@ -15,6 +15,7 @@ from app.profiling.models.dataset_profile import DatasetProfile
 
 from app.quality.quality_engine import QualityEngine
 from app.cleaning.cleaning_engine import CleaningEngine
+from app.cleaning.models.cleaning_report import CleaningReport
 
 
 class DatasetProfiler:
@@ -35,8 +36,14 @@ class DatasetProfiler:
 
     def profile(
         self,
-        df: DataFrame
+        df: DataFrame,
+        cleaning_report: CleaningReport | None = None
     ) -> DatasetProfile:
+
+        if cleaning_report is None:
+            cleaning_report = self.cleaning.clean(df)
+
+        df = cleaning_report.dataframe
 
         structure = self.structure.analyze(df)
 
@@ -106,8 +113,6 @@ class DatasetProfiler:
 
         quality = self.quality.analyze(df)
 
-        cleaning = self.cleaning.analyze(df)
-
         return DatasetProfile(
 
             rows=structure["rows"],
@@ -128,6 +133,6 @@ class DatasetProfiler:
 
             quality=quality,
 
-            cleaning=cleaning,
+            cleaning=cleaning_report,
 
         )

@@ -1,46 +1,64 @@
 from pandas import DataFrame
+from pandas import NA
+from pandas.api.types import is_string_dtype
 
 from app.cleaning.analyzers.base_cleaner import BaseCleaner
-from app.cleaning.models.cleaning_action import CleaningAction
+from app.cleaning.models.cleaning_result import CleaningResult
+
+
+NULL_TOKENS = {
+    "",
+    "-",
+    "n/a",
+    "na",
+    "null",
+    "none",
+    "nan",
+    "n\\a",
+    "nil",
+    "s/n",
+}
 
 
 class MissingCleaner(BaseCleaner):
 
-    def analyze(
+    def clean(
         self,
         df: DataFrame
-    ) -> list[CleaningAction]:
+    ) -> CleaningResult:
 
+        df = df.copy()
         actions = []
 
         for column in df.columns:
 
-            percentage = float(df[column].isna().mean())
-            
-            missing_rows = int(df[column].isna().sum())
+            series = df[column]
 
-            if percentage > 0:
+            if not (series.dtype == object or is_string_dtype(series)):
+                continue
 
-                actions.append(
+            normalized = series.map(
+                lambda value: str(value).strip().lower() if isinstance(value, str) else value
+            )
 
-                    CleaningAction(
+            mask = normalized.isin(NULL_TOKENS)
 
-                        action="handle_missing",
+            affected_rows = int(mask.sum())
 
-                        column=column,
+            if affected_rows == 0:
+                continue
 
-                        description=f"Column contains {percentage:.1%} missing values.",
+            df.loc[mask, column] = NA
 
-                        confidence=0.95,
-
-                        automatic=False,
-
-                        estimated_affected_rows=missing_rows,
-
-                        recommendation="Review missing values before filling or removing."
-
-                    )
-
+            actions.append(
+                self.build_action(
+                    action="normalize_nulls",
+                    column=column,
+                    description="Null-like placeholders were normalized to missing values.",
+                    confidence=0.99,
+                    estimated_affected_rows=affected_rows,
+                    recommendation="Treat these placeholders as missing values.",
                 )
+            )
 
-        return actions
+        return self.build_result(df, actions)
