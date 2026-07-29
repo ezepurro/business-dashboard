@@ -2,6 +2,7 @@ from app.profiling.profiler import DatasetProfiler
 from app.ingestion.dataset_loader import DatasetLoader
 from app.cleaning.cleaning_engine import CleaningEngine
 from app.transformation.transformation_engine import TransformationEngine
+from app.analytics.analytics_engine import AnalyticsEngine
 
 
 class ProcessService:
@@ -11,6 +12,7 @@ class ProcessService:
         self.cleaning = CleaningEngine()
         self.profiler = DatasetProfiler()
         self.transformation = TransformationEngine()
+        self.analytics = AnalyticsEngine()
 
     async def process(
         self,
@@ -44,5 +46,13 @@ class ProcessService:
 
         profile.transformation = transformation_report
 
-        # 5. Mostrar el resultado (temporalmente)
+        # 5. Extraer métricas de negocio desde el dataset transformado
+        analytics_report = self.analytics.analyze(
+            transformation_report.dataframe,
+            profile.metadata
+        )
+
+        profile.analytics = analytics_report
+
+        # 6. Mostrar el resultado (temporalmente)
         print(profile.model_dump_json(indent=2))

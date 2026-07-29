@@ -5,6 +5,7 @@ from app.profiling.models.dataset_metadata import DatasetMetadata
 from app.quality.models.quality_report import QualityReport
 from app.cleaning.models.cleaning_report import CleaningReport
 from app.transformation.models.transformation_report import TransformationReport
+from app.analytics.models.analytics_report import AnalyticsReport
 
 
 class DatasetProfile(BaseModel):
@@ -30,3 +31,5 @@ class DatasetProfile(BaseModel):
     cleaning: CleaningReport
 
     transformation: TransformationReport | None = None
+
+    analytics: AnalyticsReport | None = None
