@@ -6,6 +6,7 @@ from app.quality.models.quality_report import QualityReport
 from app.cleaning.models.cleaning_report import CleaningReport
 from app.transformation.models.transformation_report import TransformationReport
 from app.analytics.models.analytics_report import AnalyticsReport
+from insights.models.insight_report import InsightReport
 from app.utils.serialization import normalize_json_records
 
 
@@ -34,6 +35,8 @@ class DatasetProfile(BaseModel):
     transformation: TransformationReport | None = None
 
     analytics: AnalyticsReport | None = None
+
+    insights: InsightReport | None = None
 
     @field_serializer("sample")
     def serialize_sample(self, sample: list[dict]) -> list[dict]:

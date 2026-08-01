@@ -3,6 +3,7 @@ from app.ingestion.dataset_loader import DatasetLoader
 from app.cleaning.cleaning_engine import CleaningEngine
 from app.transformation.transformation_engine import TransformationEngine
 from app.analytics.analytics_engine import AnalyticsEngine
+from insights.insight_engine import InsightEngine
 
 
 class ProcessService:
@@ -13,6 +14,7 @@ class ProcessService:
         self.profiler = DatasetProfiler()
         self.transformation = TransformationEngine()
         self.analytics = AnalyticsEngine()
+        self.insights = InsightEngine()
 
     async def process(
         self,
@@ -53,6 +55,11 @@ class ProcessService:
         )
 
         profile.analytics = analytics_report
+
+        # 6. Generar insights a partir del perfil del dataset
+        profile.insights = self.insights.analyze(
+            profile
+        )
 
         # 6. Mostrar el resultado (temporalmente)
         print(profile.model_dump_json(indent=2))
