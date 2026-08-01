@@ -2,6 +2,7 @@ from pandas import DataFrame
 from pydantic import BaseModel, ConfigDict, field_serializer
 
 from app.transformation.models.transformation_action import TransformationAction
+from app.utils.serialization import normalize_json_records
 
 
 class TransformationResult(BaseModel):
@@ -19,4 +20,4 @@ class TransformationResult(BaseModel):
         self,
         dataframe: DataFrame
     ) -> list[dict]:
-        return dataframe.to_dict(orient="records")
+        return normalize_json_records(dataframe.to_dict(orient="records"))

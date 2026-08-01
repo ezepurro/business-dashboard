@@ -14,6 +14,7 @@ from app.cleaning.analyzers.unnamed_column_cleaner import UnnamedColumnCleaner
 from app.cleaning.cleaning_engine import CleaningEngine
 from app.cleaning.models.cleaning_report import CleaningReport
 from app.profiling.profiler import DatasetProfiler
+from app.transformation.models.transformation_report import TransformationReport
 
 
 class CleaningPipelineTests(unittest.TestCase):
@@ -199,6 +200,26 @@ class CleaningPipelineTests(unittest.TestCase):
         self.assertEqual(profile.columns, 2)
         self.assertEqual(profile.cleaning.dataframe.iloc[0]["customer"], "Alice")
         self.assertIn("\"dataframe\"", profile.model_dump_json())
+
+    def test_profile_serialization_normalizes_nan_and_datetime_values(self):
+        df = pd.DataFrame(
+            {
+                "Fecha": pd.to_datetime(["2025-01-01", "2025-01-02"]),
+                "Observaciones": ["ok", float("nan")],
+            }
+        )
+
+        profiler = DatasetProfiler()
+        profile = profiler.profile(
+            df,
+            cleaning_report=CleaningReport(dataframe=df, actions=[])
+        )
+        profile.transformation = TransformationReport(dataframe=df, actions=[])
+
+        serialized = profile.model_dump_json()
+
+        self.assertIn('"Observaciones":null', serialized)
+        self.assertIn('"2025-01-01T00:00:00"', serialized)
 
 
 if __name__ == "__main__":
