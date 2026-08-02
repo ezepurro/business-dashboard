@@ -22,3 +22,5 @@ class InsightCategory(StrEnum):
     ANALYTICS = "analytics"
 
     GENERAL = "general"
+
+    EXECUTIVE = "executive"

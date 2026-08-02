@@ -3,7 +3,7 @@ from app.ingestion.dataset_loader import DatasetLoader
 from app.cleaning.cleaning_engine import CleaningEngine
 from app.transformation.transformation_engine import TransformationEngine
 from app.analytics.analytics_engine import AnalyticsEngine
-from insights.insight_engine import InsightEngine
+from app.insights.insight_engine import InsightEngine
 
 
 class ProcessService:

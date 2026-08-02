@@ -6,7 +6,7 @@ from app.quality.models.quality_report import QualityReport
 from app.cleaning.models.cleaning_report import CleaningReport
 from app.transformation.models.transformation_report import TransformationReport
 from app.analytics.models.analytics_report import AnalyticsReport
-from insights.models.insight_report import InsightReport
+from app.insights.models.insight_report import InsightReport
 from app.utils.serialization import normalize_json_records
 
 
