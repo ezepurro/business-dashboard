@@ -1,53 +1,5 @@
-import { InferSchemaType, model, Schema } from 'mongoose';
+import { InferSchemaType, model, Schema, Types } from 'mongoose';
 import { AnalysisStatus } from '../types/enums';
-
-const kpiSchema = new Schema(
-  {
-    totalRevenue: {
-      type: Number,
-      default: 0,
-    },
-
-    averageTicket: {
-      type: Number,
-      default: 0,
-    },
-
-    topSellingProduct: {
-      type: String,
-      trim: true,
-      maxlength: 150,
-      default: '',
-    },
-
-    totalOrders: {
-      type: Number,
-      default: 0,
-    },
-  },
-  {
-    _id: false,
-  },
-);
-
-const monthlyTrendSchema = new Schema(
-  {
-    month: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 20,
-    },
-
-    revenue: {
-      type: Number,
-      required: true,
-    },
-  },
-  {
-    _id: false,
-  },
-);
 
 const analysisSchema = new Schema(
   {
@@ -55,7 +7,6 @@ const analysisSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Dataset',
       required: true,
-      unique: true,
       index: true,
     },
 
@@ -70,16 +21,29 @@ const analysisSchema = new Schema(
       type: String,
       enum: Object.values(AnalysisStatus),
       required: true,
+      default: AnalysisStatus.PROCESSING,
     },
 
-    kpis: {
-      type: kpiSchema,
-      required: true,
+    profile: {
+      type: Schema.Types.Mixed,
+      default: null,
     },
 
-    monthlyTrends: {
-      type: [monthlyTrendSchema],
-      default: [],
+    processingTime: {
+      type: Number,
+      default: null,
+    },
+
+    pythonVersion: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+
+    engineVersion: {
+      type: String,
+      trim: true,
+      default: null,
     },
 
     errorMessage: {
@@ -89,16 +53,34 @@ const analysisSchema = new Schema(
     },
   },
   {
-    timestamps: {
-      createdAt: true,
-      updatedAt: false,
-    },
+    timestamps: true,
     versionKey: false,
   },
 );
 
-analysisSchema.index({ companyId: 1, createdAt: -1 });
+analysisSchema.index({
+  companyId: 1,
+  createdAt: -1,
+});
+
+analysisSchema.index({
+  status: 1,
+  createdAt: -1,
+});
+
+analysisSchema.index(
+  {
+    datasetId: 1,
+  },
+  {
+    unique: true,
+  },
+);
 
 export type Analysis = InferSchemaType<typeof analysisSchema>;
 
-export default model<Analysis>('Analysis', analysisSchema);
+export type AnalysisDocument = InferSchemaType<typeof analysisSchema> & {
+  _id: Types.ObjectId;
+};
+
+export default model<AnalysisDocument>('Analysis', analysisSchema);

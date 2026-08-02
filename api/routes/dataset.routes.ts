@@ -5,6 +5,7 @@ import { validateObjectId } from '../middleware/validate-object-id.middleware';
 import { listDatasetsValidator } from '../validators/dataset.validator';
 import datasetController from '../controllers/dataset.controller';
 import validateRequest from '../middleware/validation.middleware';
+import analysisController from '../controllers/analysis.controller';
 
 const router = Router({ mergeParams: true });
 
@@ -17,6 +18,7 @@ router.get(
   validateRequest,
   datasetController.findAll,
 );
+router.get('/:datasetId/analysis', validateObjectId('datasetId'), analysisController.findByDataset);
 router.get(
   '/:datasetId',
   validateObjectId('companyId'),

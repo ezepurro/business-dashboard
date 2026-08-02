@@ -16,8 +16,8 @@ class DatasetController {
       const extension = validateDatasetFile(req.file);
 
       const contract: UploadDatasetContract = {
-        companyId: req.params.companyId,
-        uploadedBy: req.user.id,
+        companyId: req.params.companyId as string,
+        uploadedBy: req.user!.id,
         originalFilename: req.file.originalname,
         extension,
         mimeType: req.file.mimetype,
@@ -36,8 +36,8 @@ class DatasetController {
   findAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const datasets = await this.datasetService.findAll({
-        companyId: req.params.companyId,
-        userId: req.user.id,
+        companyId: req.params.companyId as string,
+        userId: req.user!.id,
         page: Number(req.query.page ?? 1),
         limit: Number(req.query.limit ?? 20),
         search: req.query.search as string,
@@ -55,9 +55,9 @@ class DatasetController {
   findById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const dataset = await this.datasetService.findById(
-        req.params.companyId,
-        req.params.datasetId,
-        req.user.id,
+        req.params.companyId as string,
+        req.params.datasetId as string,
+        req.user!.id,
       );
 
       return res.status(200).json(dataset);
@@ -68,7 +68,11 @@ class DatasetController {
 
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.datasetService.delete(req.params.companyId, req.params.datasetId, req.user.id);
+      await this.datasetService.delete(
+        req.params.companyId as string,
+        req.params.datasetId as string,
+        req.user!.id,
+      );
 
       return res.sendStatus(204);
     } catch (error) {

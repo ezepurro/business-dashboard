@@ -10,12 +10,16 @@ export enum UserStatus {
 }
 
 export enum DatasetStatus {
-  PENDING = 'pending',
-  PROCESSED = 'processed',
-  FAILED = 'failed',
+  UPLOADING = 'UPLOADING',
+  UPLOADED = 'UPLOADED',
+  PROCESSING = 'PROCESSING',
+  READY = 'READY',
+  FAILED = 'FAILED',
+  DELETED = 'DELETED',
 }
 
 export enum AnalysisStatus {
-  SUCCESS = 'success',
-  ERROR = 'error',
+  PROCESSING = 'PROCESSING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
 }

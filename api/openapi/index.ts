@@ -8,6 +8,8 @@ import { companySchemas } from './schemas/company.schemas';
 import { companyPaths } from './paths/company.paths';
 import { datasetSchemas } from './schemas/dataset.schemas';
 import { datasetPaths } from './paths/dataset.paths';
+import { analysisSchemas } from './schemas/analysis.schemas';
+import { analysisPaths } from './paths/analysis.paths';
 
 const openApiSpecification = {
   openapi: '3.1.0',
@@ -42,6 +44,7 @@ const openApiSpecification = {
     ...authPaths,
     ...companyPaths,
     ...datasetPaths,
+    ...analysisPaths,
   },
 
   components: {
@@ -51,6 +54,7 @@ const openApiSpecification = {
       ...authSchemas,
       ...companySchemas,
       ...datasetSchemas,
+      ...analysisSchemas,
     },
 
     responses: {

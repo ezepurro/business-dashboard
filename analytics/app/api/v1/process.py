@@ -1,30 +1,35 @@
 from fastapi import APIRouter, status
+from app.profiling.models.dataset_profile import DatasetProfile
 
 from app.schemas.process import (
-    ProcessDatasetRequest,
-    ProcessDatasetResponse
+    ProcessDatasetRequest
 )
 
 from app.services.process_service import ProcessService
 
-router = APIRouter(prefix="/api/v1", tags=["Processing"])
+router = APIRouter(
+    prefix="/api/v1",
+    tags=["Processing"]
+)
 
 service = ProcessService()
 
 
 @router.post(
     "/process",
-    response_model=ProcessDatasetResponse,
-    status_code=status.HTTP_202_ACCEPTED
+    response_model=DatasetProfile,
+    status_code=status.HTTP_200_OK
 )
-async def process_dataset(request: ProcessDatasetRequest):
+async def process_dataset(
+    request: ProcessDatasetRequest
+):
 
-    await service.process(
+    return await service.process(
+
         request.dataset_id,
-        request.bucket,
-        request.object_key
-    )
 
-    return ProcessDatasetResponse(
-        status="accepted"
+        request.bucket,
+
+        request.object_key
+
     )

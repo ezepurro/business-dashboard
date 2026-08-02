@@ -1,13 +1,5 @@
 import { InferSchemaType, Schema, Types, model } from 'mongoose';
-
-export enum DatasetStatus {
-  UPLOADING = 'UPLOADING',
-  UPLOADED = 'UPLOADED',
-  PROCESSING = 'PROCESSING',
-  READY = 'READY',
-  FAILED = 'FAILED',
-  DELETED = 'DELETED',
-}
+import { DatasetStatus } from '../types/enums';
 
 const datasetSchema = new Schema(
   {

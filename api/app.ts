@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes';
 import companyRoutes from './routes/company.routes';
 import datasetRoutes from './routes/dataset.routes';
+import analysisRoutes from './routes/analysis.routes';
 import errorMiddleware from './middleware/error.middleware';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -44,6 +45,8 @@ app.get('/api/health', (_, res) => {
 app.use('/api/auth', authRoutes);
 
 app.use('/api/companies', companyRoutes);
+
+app.use('/api/analyses', analysisRoutes);
 
 app.use('/api/docs', ...swaggerMiddleware);
 

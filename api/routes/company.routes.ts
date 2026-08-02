@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import datasetRoutes from './dataset.routes';
+import companyAnalysisRoutes from './company-analysis.routes';
 import companyController from '../controllers/company.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { validateObjectId } from '../middleware/validate-object-id.middleware';
@@ -28,6 +29,8 @@ router.get(
 );
 
 router.use('/:companyId/datasets', datasetRoutes);
+
+router.use('/:companyId/analyses', validateObjectId('companyId'), companyAnalysisRoutes);
 
 router.get('/:id', validateObjectId('id'), companyController.findById);
 

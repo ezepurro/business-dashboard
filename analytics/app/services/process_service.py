@@ -1,3 +1,4 @@
+from app.profiling.models.dataset_profile import DatasetProfile
 from app.profiling.profiler import DatasetProfiler
 from app.ingestion.dataset_loader import DatasetLoader
 from app.cleaning.cleaning_engine import CleaningEngine
@@ -21,7 +22,7 @@ class ProcessService:
         dataset_id: str,
         bucket: str,
         object_key: str
-    ) -> None:
+    ) -> DatasetProfile:
 
         print(f"Processing dataset {dataset_id}...")
 
@@ -61,5 +62,4 @@ class ProcessService:
             profile
         )
 
-        # 6. Mostrar el resultado (temporalmente)
-        print(profile.model_dump_json(indent=2))
+        return profile

@@ -1,10 +1,11 @@
 import { Company, Dataset } from '../models';
-import { DatasetStatus } from '../models/Dataset';
+import { DatasetStatus } from '../types/enums';
 import { UploadDatasetContract } from '../contracts/dataset/upload-dataset.contract';
 import { StorageFactory } from '../storage';
 import { buildDatasetObjectKey } from '../utils/object-key';
 import { ListDatasetsContract } from '../contracts/dataset/list-datasets.contract';
 import ApiError from '../utils/ApiError';
+import analysisService from './analysis.service';
 
 export class DatasetService {
   private readonly storage = StorageFactory.create();
@@ -40,17 +41,42 @@ export class DatasetService {
 
     dataset.objectKey = buildDatasetObjectKey(contract.companyId, dataset.id, contract.extension);
 
-    await this.storage.upload({
-      objectKey: dataset.objectKey,
-      buffer: contract.buffer,
-      mimeType: contract.mimeType,
-    });
-
-    dataset.status = DatasetStatus.UPLOADED;
-
     await dataset.save();
 
-    return dataset;
+    try {
+      await this.storage.upload({
+        objectKey: dataset.objectKey,
+        buffer: contract.buffer,
+        mimeType: contract.mimeType,
+      });
+
+      dataset.status = DatasetStatus.UPLOADED;
+
+      await dataset.save();
+
+      dataset.status = DatasetStatus.PROCESSING;
+
+      await dataset.save();
+
+      await analysisService.processDataset({
+        datasetId: dataset.id,
+        companyId: contract.companyId,
+        bucket: dataset.bucket,
+        objectKey: dataset.objectKey,
+      });
+
+      dataset.status = DatasetStatus.READY;
+
+      await dataset.save();
+
+      return dataset;
+    } catch (error) {
+      dataset.status = DatasetStatus.FAILED;
+
+      await dataset.save();
+
+      throw error;
+    }
   }
 
   async findAll(contract: ListDatasetsContract) {
@@ -74,7 +100,7 @@ export class DatasetService {
       };
     }
 
-    const sort = {
+    const sort: Record<string, 1 | -1> = {
       [contract.sortBy ?? 'createdAt']: contract.order === 'asc' ? 1 : -1,
     };
 

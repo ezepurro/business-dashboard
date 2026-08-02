@@ -49,20 +49,20 @@ class DatasetLoader:
                 file_bytes
             )
 
-            print(
-                f"""
-                Workbook inspection
-                -------------------
-                Sheet: {inspection.sheet.sheet_name}
-                Sheet score: {inspection.sheet.total_score:.2f}
+            # print(
+            #     f"""
+            #     Workbook inspection
+            #     -------------------
+            #     Sheet: {inspection.sheet.sheet_name}
+            #     Sheet score: {inspection.sheet.total_score:.2f}
 
-                Header row: {inspection.header.header_row + 1}
-                Header confidence: {inspection.header.confidence:.2f}
+            #     Header row: {inspection.header.header_row + 1}
+            #     Header confidence: {inspection.header.confidence:.2f}
 
-                Footer row: {inspection.footer.footer_row + 1}
-                Footer confidence: {inspection.footer.confidence:.2f}
-                """
-            )
+            #     Footer row: {inspection.footer.footer_row + 1}
+            #     Footer confidence: {inspection.footer.confidence:.2f}
+            #     """
+            # )
 
             df = pd.read_excel(
                 BytesIO(file_bytes),

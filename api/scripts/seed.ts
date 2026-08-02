@@ -47,11 +47,15 @@ async function seed() {
     console.log('Creando dataset...');
 
     const dataset = await Dataset.create({
-      filename: 'ventas_2025.csv',
-      storagePath: '/uploads/ventas_2025.csv',
-      status: DatasetStatus.PROCESSED,
-      companyId: company._id,
-      uploadedAt: new Date(),
+      company: company._id,
+      uploadedBy: user._id,
+      originalFilename: 'ventas_2025.csv',
+      extension: 'csv',
+      mimeType: 'text/csv',
+      size: 1024,
+      bucket: 'datasets',
+      objectKey: 'companies/demo/demo.csv',
+      status: DatasetStatus.READY,
     });
 
     console.log('Creando análisis...');
@@ -61,23 +65,14 @@ async function seed() {
       companyId: company._id,
 
       status: AnalysisStatus.SUCCESS,
-
-      kpis: {
-        totalRevenue: 152340.85,
-        averageTicket: 248.6,
-        topSellingProduct: 'Mouse Logitech G203',
-        totalOrders: 613,
+      profile: {
+        metadata: {
+          datasetName: 'ventas_2025.csv',
+        },
       },
-
-      monthlyTrends: [
-        { month: 'Enero', revenue: 21000 },
-        { month: 'Febrero', revenue: 19500 },
-        { month: 'Marzo', revenue: 24300 },
-        { month: 'Abril', revenue: 27500 },
-        { month: 'Mayo', revenue: 30100 },
-        { month: 'Junio', revenue: 29940.85 },
-      ],
-
+      processingTime: 1520,
+      pythonVersion: '3.11.9',
+      engineVersion: '1.0.0',
       errorMessage: null,
     });
 
