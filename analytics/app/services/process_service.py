@@ -5,6 +5,7 @@ from app.cleaning.cleaning_engine import CleaningEngine
 from app.transformation.transformation_engine import TransformationEngine
 from app.analytics.analytics_engine import AnalyticsEngine
 from app.insights.insight_engine import InsightEngine
+from app.profiling.exporters.profile_exporter import ProfileExporter
 
 
 class ProcessService:
@@ -16,6 +17,7 @@ class ProcessService:
         self.transformation = TransformationEngine()
         self.analytics = AnalyticsEngine()
         self.insights = InsightEngine()
+        self.exporter = ProfileExporter()
 
     async def process(
         self,
@@ -62,4 +64,4 @@ class ProcessService:
             profile
         )
 
-        return profile
+        return self.exporter.export(profile)
