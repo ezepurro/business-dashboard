@@ -93,6 +93,21 @@ class BaseInsightBuilder(ABC):
             "Revisar el insight."
         )
 
+    def related_columns(
+        self,
+        *columns: str | None
+    ) -> list[str]:
+
+        return [
+
+            column
+
+            for column in columns
+
+            if column is not None
+
+        ]
+
     def build_from_result(
         self,
         result: AnalysisResult | None,

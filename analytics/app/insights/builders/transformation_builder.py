@@ -42,7 +42,9 @@ class TransformationBuilder(BaseInsightBuilder):
 
                     confidence=action.confidence,
 
-                    related_columns=[action.column],
+                    related_columns=self.related_columns(
+                        action.column
+                    ),
 
                     business_impact=self.impact_from_priority(priority),
 
