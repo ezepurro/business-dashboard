@@ -49,7 +49,7 @@ export class AnalysisRepository {
         $set: data,
       },
       {
-        new: true,
+        returnDocument: 'after',
       },
     );
   }

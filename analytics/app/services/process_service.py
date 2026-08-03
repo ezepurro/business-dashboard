@@ -1,3 +1,8 @@
+import platform
+
+from app.core.version import ENGINE_VERSION
+
+from app.schemas.process import ProcessDatasetResponse
 from app.profiling.models.dataset_profile import DatasetProfile
 from app.profiling.profiler import DatasetProfiler
 from app.ingestion.dataset_loader import DatasetLoader
@@ -64,4 +69,14 @@ class ProcessService:
             profile
         )
 
-        return self.exporter.export(profile)
+        profile = self.exporter.export(profile)
+
+        return ProcessDatasetResponse(
+
+            profile=profile,
+
+            engineVersion=ENGINE_VERSION,
+
+            pythonVersion=platform.python_version()
+
+        )

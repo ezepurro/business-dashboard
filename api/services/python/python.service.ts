@@ -31,31 +31,48 @@ export class PythonService {
 
   async processDataset(contract: PythonProcessDatasetContract): Promise<PythonProcessResponse> {
     const response = await this.client.post('/api/v1/process', contract);
+
     const data = response.data as Record<string, unknown>;
 
     return {
       profile: this.extractProfile(data),
-      pythonVersion: this.extractMetadata(data, response.headers['x-python-version']),
-      engineVersion: this.extractMetadata(data, response.headers['x-engine-version']),
+
+      pythonVersion: this.extractMetadata(
+        data,
+        'pythonVersion',
+        response.headers['x-python-version'],
+      ),
+
+      engineVersion: this.extractMetadata(
+        data,
+        'engineVersion',
+        response.headers['x-engine-version'],
+      ),
     };
   }
 
   private extractProfile(data: Record<string, unknown>): Record<string, unknown> {
-    const nestedProfile = data.profile;
+    const profile = data.profile;
 
-    if (nestedProfile && typeof nestedProfile === 'object' && !Array.isArray(nestedProfile)) {
-      return nestedProfile as Record<string, unknown>;
+    if (profile && typeof profile === 'object' && !Array.isArray(profile)) {
+      return profile as Record<string, unknown>;
     }
 
     return data;
   }
 
-  private extractMetadata(data: Record<string, unknown>, headerValue: unknown): string | null {
-    return (
-      toStringOrNull(headerValue) ??
-      toStringOrNull(data.pythonVersion) ??
-      toStringOrNull(data.engineVersion)
-    );
+  private extractMetadata(
+    data: Record<string, unknown>,
+    property: 'pythonVersion' | 'engineVersion',
+    headerValue: unknown,
+  ): string | null {
+    const bodyValue = toStringOrNull(data[property]);
+
+    if (bodyValue) {
+      return bodyValue;
+    }
+
+    return toStringOrNull(headerValue);
   }
 }
 
