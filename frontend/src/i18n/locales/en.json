@@ -30,7 +30,10 @@
     "specs": {
       "items": [
         { "value": "2.5s", "label": "max to compute KPIs for a 50,000-row dataset" },
-        { "value": "15MB", "label": "per .csv or .xlsx upload, validated before it ever hits storage" },
+        {
+          "value": "15MB",
+          "label": "per .csv or .xlsx upload, validated before it ever hits storage"
+        },
         { "value": "Unlimited", "label": "isolated company workspaces per account" }
       ]
     },
@@ -218,7 +221,9 @@
   "analysisModal": {
     "runningAnalysis": "Running analysis…",
     "mockNotice": "The Analytics Service isn't wired up yet — these numbers are sample data so you can preview how a finished analysis will look.",
-    "monthlyRevenue": "Monthly revenue"
+    "monthlyRevenue": "Monthly revenue",
+    "loadError": "Unable to load the analysis.",
+    "processingFailed": "The analysis could not be completed."
   },
   "kpis": {
     "totalRevenue": "Total revenue",
@@ -237,5 +242,45 @@
     "title": "Page not found",
     "description": "The page you're looking for doesn't exist.",
     "backHome": "Back home"
+  },
+  "analysis": {
+    "overview": "Dataset overview",
+    "rows": "Rows",
+    "columns": "Columns",
+    "quality": "Quality",
+    "processingTime": "Processing time",
+    "engine": "Analytics Engine",
+    "python": "Python",
+    "qualityMetrics": "Dataset quality",
+    "missingValues": "Missing values",
+    "noMissingValues": "No missing values detected.",
+    "insights": "Insights",
+    "strengths": "Strengths",
+    "warnings": "Warnings",
+    "critical": "Critical",
+    "noInsights": "No insights were generated for this dataset.",
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "cleaning": "Cleaning",
+    "cleaningDescription": "Actions performed during dataset cleaning.",
+    "noCleaning": "No cleaning actions were executed.",
+    "recommendation": "Recommendation",
+    "automatic": "Automatic",
+    "transformation": {
+      "title": "Transformations",
+      "subtitle": "Actions performed during dataset transformation."
+    },
+    "noCharts": "No charts available.",
+    "unsupportedChart": "Unsupported chart type.",
+    "insightsTitle": "Insights Summary",
+    "overallScore": "Overall Score",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "chartsTile": "Charts",
+    "executiveSummary": "Executive Summary"
   }
 }

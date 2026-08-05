@@ -6,7 +6,9 @@ import type { Dataset } from '../types/dataset.types';
 export function useAnalysis(dataset: Dataset | null) {
   return useQuery({
     queryKey: queryKeys.analysis(dataset?._id ?? ''),
-    queryFn: () => analysisService.getMockAnalysis(dataset!),
+
     enabled: Boolean(dataset),
+
+    queryFn: () => analysisService.getAnalysis(dataset!.company, dataset!._id),
   });
 }

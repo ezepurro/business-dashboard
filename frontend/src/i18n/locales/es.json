@@ -30,7 +30,10 @@
     "specs": {
       "items": [
         { "value": "2.5s", "label": "máximo para calcular los KPIs de un dataset de 50.000 filas" },
-        { "value": "15MB", "label": "por archivo .csv o .xlsx, validado antes de llegar al almacenamiento" },
+        {
+          "value": "15MB",
+          "label": "por archivo .csv o .xlsx, validado antes de llegar al almacenamiento"
+        },
         { "value": "Ilimitadas", "label": "empresas aisladas por cuenta" }
       ]
     },
@@ -218,7 +221,9 @@
   "analysisModal": {
     "runningAnalysis": "Ejecutando análisis…",
     "mockNotice": "El servicio de Analytics todavía no está conectado — estos números son datos de muestra para que puedas previsualizar cómo se verá un análisis terminado.",
-    "monthlyRevenue": "Ingresos mensuales"
+    "monthlyRevenue": "Ingresos mensuales",
+    "loadError": "No fue posible cargar el análisis.",
+    "processingFailed": "El análisis no pudo completarse."
   },
   "kpis": {
     "totalRevenue": "Ingresos totales",
@@ -237,5 +242,45 @@
     "title": "Página no encontrada",
     "description": "La página que buscás no existe.",
     "backHome": "Volver al inicio"
+  },
+  "analysis": {
+    "overview": "Resumen del dataset",
+    "rows": "Filas",
+    "columns": "Columnas",
+    "quality": "Calidad",
+    "processingTime": "Tiempo de análisis",
+    "engine": "Analytics Engine",
+    "python": "Python",
+    "qualityMetrics": "Calidad del dataset",
+    "missingValues": "Valores faltantes",
+    "noMissingValues": "No se detectaron valores faltantes.",
+    "insights": "Insights",
+    "strengths": "Fortalezas",
+    "warnings": "Advertencias",
+    "critical": "Críticos",
+    "noInsights": "No se generaron insights para este dataset.",
+    "severity": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "cleaning": "Limpieza",
+    "cleaningDescription": "Acciones ejecutadas durante la limpieza del dataset.",
+    "noCleaning": "No se realizaron acciones de limpieza.",
+    "recommendation": "Recomendación",
+    "automatic": "Automatico",
+    "transformation": {
+      "title": "Transformaciones",
+      "subtitle": "Acciones ejecutadas durante la transformación del dataset."
+    },
+    "noCharts": "No hay gráficos disponibles.",
+    "unsupportedChart": "Tipo de gráfico no soportado.",
+    "insightsTitle": "Resumen de insights",
+    "overallScore": "Puntaje general",
+    "showMore": "Ver más",
+    "showLess": "Ver menos",
+    "chartsTile": "Gráficos",
+    "executiveSummary": "Resumen ejecutivo"
   }
 }
