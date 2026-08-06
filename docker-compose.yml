@@ -58,15 +58,45 @@ services:
   analytics:
     build:
       context: ./analytics
-    container_name: analytics
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./analytics:/app
-    env_file:
-      - ./analytics/.env
+
+    container_name: business-dashboard-analytics
+
+    restart: unless-stopped
+
     depends_on:
       - minio
+
+    env_file:
+      - ./analytics/.env
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./analytics:/app
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: business-dashboard-frontend
+
+    restart: unless-stopped
+
+    depends_on:
+      - api
+
+    env_file:
+      - ./frontend/.env
+
+    ports:
+      - "5173:5173"
+
+    command: npm run dev -- --host
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   mongodb_data:

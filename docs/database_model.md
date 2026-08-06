@@ -59,23 +59,24 @@ A continuación, se representa de manera visual cómo se estructuran y vinculan 
                                    │
                                    │ (Un dataset genera exactamente 1 análisis)
                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        COLECCIÓN: analyses                             │
-├────────────────────────────────────────────────────────────────────────┤
-│  _id (ObjectId)                                                        │
-│  datasetId (ObjectId) -> [Referencia lógica a "datasets._id"]          │
-│  companyId (ObjectId) -> [Denormalización para búsquedas rápidas]      │
-│  status (String) -> ["success", "error"]                               │
-│  kpis (Embedded Document / Object)                                     │
-│     ├── totalRevenue (Number)                                          │
-│     ├── averageTicket (Number)                                         │
-│     ├── topSellingProduct (String)                                     │
-│     └── totalOrders (Number)                                           │
-│  monthlyTrends (Array of Objects)                                      │
-│     └── [ { month: String, revenue: Number }, ... ]                    │
-│  errorMessage (String, Opcional)                                       │
-│  createdAt (Date)                                                      │
-└────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   COLECCIÓN: analyses                                        │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+│  _id (ObjectId)                                                                              │
+│  datasetId (ObjectId) -> [Referencia lógica a "datasets._id"]                                │
+│  companyId (ObjectId) -> [Referencia lógica a "companies._id"]                               │
+│  status (String) -> ["processing","completed","failed"]                                      │
+│  profile (Embedded Document)                                                                 │
+│     ├── metadata                                                                             │
+│     ├── quality                                                                              │
+│     ├── cleaning                                                                             │
+│     ├── transformation                                                                       │
+│     ├── analytics                                                                            │
+│     ├── insights                                                                             │
+│     └── generatedAt                                                                          │
+│  errorMessage (String, opcional)                                                             │
+│  createdAt / updatedAt (Date)                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -126,28 +127,122 @@ Funciona como el registro histórico de las interacciones de carga de archivos (
 
 ### 2.4 Colección `analyses`
 
-Esta colección aprovecha al máximo la flexibilidad de MongoDB al **embeber o anidar de forma directa el JSON analítico estructurado** retornado por el microservicio en Python (FastAPI + Pandas). De esta manera, el frontend no requiere realizar costosos JOINS ni cálculos en tiempo real; lee el documento directamente listo para renderizar con `Recharts`.
+Representa el resultado completo del procesamiento realizado por el microservicio de Analytics.
+
+A diferencia de las primeras iteraciones del proyecto, el sistema ya no persiste únicamente un conjunto reducido de KPIs, sino un **perfil analítico completo** (`AnalysisProfile`) listo para ser consumido directamente por el frontend.
+
+Todo el documento se genera una única vez durante el procesamiento del dataset y posteriormente se considera inmutable.
 
 - **`_id`**: Identificador único del análisis (`ObjectId`).
-- **`datasetId`**: Referencia al archivo origen que dio lugar a las métricas (`ObjectId`, requerido).
-- **`companyId`**: Copia de referencia de la empresa (`ObjectId`). _Nota: Se introduce de manera denormalizada para permitir la rápida consulta de historiales de una empresa específica sin pasar por la colección intermedia de datasets._
-- **`status`**: Resultado de la ejecución del motor matemático (`String`, valores: `"success"`, `"error"`).
-- **`kpis`**: Subdocumento anidado con los indicadores estáticos (`Object`):
-  - `totalRevenue`: Facturación total calculada (`Number`).
-  - `averageTicket`: Valor de compra promedio por transacción (`Number`).
-  - `topSellingProduct`: Nombre del producto con mayor volumen de ventas (`String`).
-  - `totalOrders`: Cantidad total de transacciones registradas (`Number`).
-- **`monthlyTrends`**: Matriz de objetos flexibles que representa la evolución histórica de ingresos (`Array`):
-  - `month`: Nombre del mes evaluado (`String`).
-  - `revenue`: Facturación registrada en dicho periodo (`Number`).
-- **`errorMessage`**: Detalle del fallo en caso de que el status sea `"error"` (`String`, opcional).
-- **`createdAt`**: Fecha de generación del informe analítico (`Date`).
+- **`datasetId`**: Referencia lógica al dataset procesado (`ObjectId`, requerido, indexado).
+- **`companyId`**: Referencia lógica a la empresa propietaria (`ObjectId`, requerido, indexado).
+- **`status`**: Estado del procesamiento (`String`, valores: `"processing"`, `"completed"`, `"failed"`).
+- **`profile`**: Documento embebido que contiene el resultado completo del motor analítico.
+- **`errorMessage`**: Mensaje descriptivo en caso de error durante el procesamiento (`String`, opcional).
+- **`createdAt / updatedAt`**: Marcas de tiempo gestionadas automáticamente por Mongoose.
+
+El documento `profile` se encuentra organizado en los siguientes bloques:
+
+### metadata
+
+Información descriptiva del dataset.
+
+- cantidad de filas
+- cantidad de columnas
+- tipos de datos
+- diccionario de datos
+- estadísticas generales
+
+### quality
+
+Métricas de calidad del dataset.
+
+- score de calidad
+- completitud
+- consistencia
+- columnas con mayor cantidad de valores faltantes
+
+### cleaning
+
+Resumen del proceso automático de limpieza.
+
+- filas descartadas
+- duplicados
+- normalizaciones realizadas
+- valores corregidos
+
+### transformation
+
+Información sobre las transformaciones aplicadas.
+
+- columnas generadas
+- conversiones de tipos
+- normalizaciones
+- variables derivadas
+
+### analytics
+
+Resultados cuantitativos generados automáticamente.
+
+Incluye:
+
+- gráficos
+- series temporales
+- distribuciones
+- rankings
+- comparaciones
+
+Cada gráfico contiene:
+
+- tipo
+- título
+- etiquetas
+- series
+- puntos
+
+permitiendo que el frontend los renderice dinámicamente mediante Recharts sin lógica adicional.
+
+### insights
+
+Conclusiones generadas por el motor analítico.
+
+Se divide en:
+
+- Executive Summary
+- Business Insights agrupados por categoría
+- recomendaciones
+- observaciones relevantes
+
+Esta estructura permite incorporar nuevos tipos de análisis sin modificar el esquema principal del documento.
 
 ---
 
 ## 3. Justificación del Diseño e Implicancias No Relacionales
 
-1.  **Eliminación de Joins mediante Embebido**: Los KPIs y las series temporales de gráficos (`monthlyTrends`) se guardan directamente dentro del documento de análisis. Al ser datos de lectura frecuente e inmutables una vez procesados, MongoDB permite recuperarlos en una sola operación de E/S de base de datos.
-2.  **Estrategia de Denormalización**: Al incluir `companyId` directamente en la colección `analyses`, optimizamos drásticamente el endpoint de `Historial de Análisis`, evitando requerir una consulta en cascada sobre los archivos cargados.
-3.  **Flexibilidad del Esquema frente a Versiones Futuras**: En las fases de evolución del producto (IA, predicción de ventas o detección de anomalías), el subdocumento `kpis` o la colección `analyses` podrá expandirse con nuevos campos matemáticos sin necesidad de ejecutar migraciones estructurales complejas de bases de datos.
-4.  **Desacoplamiento del Almacenamiento Binario (MinIO + `StorageProvider`)**: MongoDB queda reservado exclusivamente para metadatos estructurados; el peso de los archivos (`.csv`/`.xlsx`) recae en MinIO, un Object Storage compatible con S3. La colección `datasets` nunca contiene un buffer, un `Buffer` de Node ni chunks de GridFS — solo `bucket` + `objectKey`, que son coordenadas de lectura. Esta separación evita que el tamaño de la base de datos operacional crezca con el volumen de archivos subidos, y permite escalar o migrar el backend de almacenamiento (MinIO → S3, por ejemplo) sin tocar ni el esquema ni la lógica de negocio del módulo de Dataset.
+1. **Documento Analítico Embebido**: Todo el resultado del procesamiento se almacena dentro de un único documento `Analysis`. Esto permite que el frontend obtenga toda la información necesaria mediante una sola consulta, eliminando cálculos adicionales y múltiples lecturas sobre la base de datos.
+2. **Modelo Preparado para Evolución**: El subdocumento `profile` está organizado en módulos (`metadata`, `quality`, `cleaning`, `transformation`, `analytics` e `insights`), permitiendo incorporar nuevos motores analíticos sin modificar la estructura principal de la colección.
+3. **Frontend completamente desacoplado**: Los gráficos, KPIs, métricas e insights ya se almacenan en el formato esperado por la interfaz. El frontend únicamente renderiza el contenido recibido, sin recalcular estadísticas ni depender del tipo de dataset analizado.
+4. **Desacoplamiento del Almacenamiento Binario (MinIO + `StorageProvider`)**: MongoDB queda reservado exclusivamente para metadatos estructurados; el peso de los archivos (`.csv`/`.xlsx`) recae en MinIO, un Object Storage compatible con S3. La colección `datasets` nunca contiene un buffer, un `Buffer` de Node ni chunks de GridFS — solo `bucket` + `objectKey`, que son coordenadas de lectura. Esta separación evita que el tamaño de la base de datos operacional crezca con el volumen de archivos subidos, y permite escalar o migrar el backend de almacenamiento (MinIO → S3, por ejemplo) sin tocar ni el esquema ni la lógica de negocio del módulo de Dataset.
+
+---
+
+## 4. Evolución del Modelo Analítico
+
+La colección `analyses` fue diseñada siguiendo un enfoque **schema-flexible**, aprovechando las capacidades documentales de MongoDB.
+
+El bloque `profile` actúa como un contrato entre el motor de Analytics y el frontend.
+
+Gracias a esta decisión arquitectónica:
+
+- pueden incorporarse nuevos motores analíticos sin modificar el resto del sistema;
+- los dashboards permanecen independientes de la estructura interna de los datasets;
+- el frontend únicamente interpreta un modelo uniforme (`AnalysisProfile`), independientemente del tipo de archivo procesado.
+
+Este diseño facilita futuras incorporaciones como:
+
+- modelos predictivos;
+- detección automática de anomalías;
+- clustering de clientes;
+- segmentación de productos;
+- recomendaciones basadas en IA;
+- generación automática de dashboards especializados.

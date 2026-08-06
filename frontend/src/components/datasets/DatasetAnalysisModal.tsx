@@ -1,16 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import type { Dataset } from '../../types/dataset.types';
 import { useAnalysis } from '../../hooks/useAnalysis';
-import { formatCurrency, formatNumber } from '../../utils/format';
-
 import { Modal } from '../ui/Modal';
 import { Spinner } from '../ui/Spinner';
 import { AlertBanner } from '../ui/AlertBanner';
 import { AccordionCard } from '../ui/AccordionCard';
-
-import { KpiStatTile } from '../charts/KpiStatTile';
-
 import { DatasetOverviewCard } from '../analysis/DatasetOverviewCard';
+import { AnalysisKpisCard } from '../analysis/AnalysisKpisCard';
 import { QualityMetricsCard } from '../analysis/QualityMetricsCard';
 import { MissingValuesCard } from '../analysis/MissingValuesCard';
 import { TransformationCard } from '../analysis/TransformationCard';
@@ -56,21 +52,6 @@ export function DatasetAnalysisModal({ dataset, currency, onClose }: DatasetAnal
 
   const profile = analysis.profile;
 
-  const totalOrders = profile.metadata.rows;
-
-  const revenueChart = profile.analytics.charts.find(
-    (chart) =>
-      chart.title.toLowerCase().includes('revenue') || chart.title.toLowerCase().includes('venta'),
-  );
-
-  const totalRevenue =
-    revenueChart?.series[0]?.points.reduce((sum, point) => sum + point.value, 0) ?? 0;
-
-  const averageTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-
-  const topSellingProduct =
-    profile.insights.insights.find((insight) => insight.category === 'products')?.title ?? '-';
-
   return (
     <Modal title={dataset.originalFilename} onClose={onClose}>
       <div className="flex flex-col gap-6">
@@ -82,21 +63,7 @@ export function DatasetAnalysisModal({ dataset, currency, onClose }: DatasetAnal
         </div>
 
         {/* KPIs */}
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiStatTile
-            label={t('kpis.totalRevenue')}
-            value={formatCurrency(totalRevenue, currency)}
-          />
-
-          <KpiStatTile
-            label={t('kpis.averageTicket')}
-            value={formatCurrency(averageTicket, currency)}
-          />
-
-          <KpiStatTile label={t('kpis.topProduct')} value={topSellingProduct} />
-
-          <KpiStatTile label={t('kpis.totalOrders')} value={formatNumber(totalOrders)} />
-        </div>
+        <AnalysisKpisCard profile={profile} currency={currency} />
 
         {/* Missing Values */}
         <AccordionCard title={t('analysis.missingValues')} defaultOpen={false}>

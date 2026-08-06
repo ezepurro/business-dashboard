@@ -3,8 +3,8 @@
 ## Proyecto: Business Dashboard Automatizado para PyMEs
 
 **Estándar:** IEEE 830-1998  
-**Versión:** 1.3 (Dataset Module + MinIO Integration)
-**Fecha:** Julio 2026
+**Versión:** 1.4 (Analytics Module + Dashboard Visualization)
+**Fecha:** Agosto 2026
 
 ---
 
@@ -28,7 +28,9 @@ Este documento especifica los requisitos de software formales para la primera ve
 
 ### 1.2 Alcance
 
-El sistema automatiza la ingesta y conversión de datos operativos planos (archivos de Excel y CSV) generados por pequeñas empresas en paneles interactivos (Dashboards) con KPIs de negocio calculados al instante, aislando la lógica analítica pesada en un microservicio de alto rendimiento.
+El sistema automatiza la ingesta y conversión de datos operativos planos (archivos de Excel y CSV) generados por pequeñas empresas en paneles interactivos (Dashboards) con KPIs de negocio calculados automáticamente.
+
+La plataforma desacopla el procesamiento analítico en un microservicio especializado basado en Python (FastAPI + Pandas), permitiendo generar perfiles estructurales y semánticos del dataset, métricas de calidad, procesos de limpieza, transformaciones aplicadas, gráficos estadísticos e insights de negocio persistidos para su posterior consulta desde la interfaz web.
 
 ---
 
@@ -43,11 +45,18 @@ La plataforma opera como un software SaaS desacoplado. La interfaz gráfica se c
 - Registro e inicio de sesión seguro de usuarios.
 - Gestión integrada de múltiples perfiles corporativos (Multi-empresa).
 - Gestión completa de datasets asociados a cada empresa (carga, consulta, listado y eliminación).
-- Ingesta, parseo y validación de estructuras en archivos planos.
-- Almacenamiento de archivos desacoplado de la base de datos operacional (Object Storage vía MinIO).
-- Persistencia de metadatos de datasets en MongoDB.
-- Computación algorítmica de KPIs económicos y métricas de venta.
-- Despliegue visual dinámico en tiempo real y persistencia histórica.
+- Almacenamiento desacoplado de archivos mediante Object Storage (MinIO).
+- Procesamiento automático de datasets mediante un motor analítico independiente.
+- Perfilado estructural del dataset.
+- Perfilado semántico de columnas.
+- Detección de valores faltantes y análisis de calidad.
+- Limpieza y normalización automática de datos.
+- Registro de transformaciones aplicadas durante el procesamiento.
+- Generación automática de indicadores de negocio (KPIs).
+- Generación automática de visualizaciones estadísticas.
+- Generación de insights ejecutivos agrupados por categorías.
+- Persistencia histórica del análisis para consultas posteriores.
+- Visualización de dashboards interactivos desde el frontend.
 
 ---
 
@@ -64,6 +73,16 @@ La plataforma opera como un software SaaS desacoplado. La interfaz gráfica se c
 | **RF-05** | Persistencia Histórica                 | Los JSON resultantes se almacenarán de forma nativa en colecciones documentales para acceso rápido retrospectivo.                                                                | Media     |
 | **RF-06** | Almacenamiento Desacoplado de Archivos | El sistema persistirá los archivos binarios cargados en un Object Storage (MinIO) a través de una abstracción `StorageProvider`, nunca en MongoDB.                               | Alta      |
 | **RF-07** | Gestión de Datasets                    | El sistema permitirá listar y administrar todos los datasets pertenecientes a una empresa con soporte para paginación y filtros.                                                 | Alta      |
+| **RF-08** | Perfilado de Datos                     | El sistema construirá automáticamente un perfil estructural y estadístico del dataset, incluyendo metadatos, diccionario de datos y tipos semánticos inferidos.                  | Alta      |
+| **RF-09** | Dashboard Analítico                    | El sistema permitirá visualizar el resultado completo del análisis mediante un dashboard interactivo.                                                                            | Alta      |
+| **RF-10** | Métricas de Calidad                    | El sistema calculará métricas de calidad del dataset como completitud, consistencia, duplicados y valores faltantes.                                                             | Alta      |
+| **RF-11** | Registro de Transformaciones           | El sistema registrará todas las transformaciones realizadas durante el proceso de limpieza del dataset.                                                                          | Media     |
+| **RF-12** | Generación de Insights                 | El sistema generará automáticamente observaciones e insights agrupados por categorías de negocio.                                                                                | Alta      |
+| **RF-08** | Perfilado de Datos                     | El sistema construirá automáticamente un perfil estructural y estadístico del dataset, incluyendo metadatos, diccionario de datos y tipos semánticos inferidos.                  | Alta      |
+| **RF-09** | Dashboard Analítico                    | El sistema permitirá visualizar el resultado completo del análisis mediante un dashboard interactivo.                                                                            | Alta      |
+| **RF-10** | Métricas de Calidad                    | El sistema calculará métricas de calidad del dataset como completitud, consistencia, duplicados y valores faltantes.                                                             | Alta      |
+| **RF-11** | Registro de Transformaciones           | El sistema registrará todas las transformaciones realizadas durante el proceso de limpieza del dataset.                                                                          | Media     |
+| **RF-12** | Generación de Insights                 | El sistema generará automáticamente observaciones e insights agrupados por categorías de negocio.                                                                                | Alta      |
 
 ### 3.2 Requisitos No Funcionales (RNF)
 
@@ -84,7 +103,6 @@ La plataforma opera como un software SaaS desacoplado. La interfaz gráfica se c
 
 ```plantuml
 @startuml
-skinparam handwritten false
 skinparam monochrome false
 skinparam packageStyle rect
 skinparam direction left to right
@@ -98,6 +116,8 @@ rectangle "Sistema Business Dashboard" {
     usecase "UC-03: Cargar Archivo Datos" as UC03
     usecase "UC-04: Analizar Indicadores" as UC04
     usecase "UC-05: Consultar Historial" as UC05
+    usecase "UC-06: Visualizar Dashboard" as UC06
+    usecase "UC-07: Consultar Análisis" as UC07
 
     UC02 ..> UC01 : <<extend>>
     UC03 ..> UC04 : <<include>>
@@ -107,6 +127,10 @@ user --> UC01
 user --> UC02
 user --> UC03
 user --> UC05
+user --> UC06
+user --> UC07
+
+UC07 ..> UC04 : <<include>>
 
 UC04 <-- engine
 @endum
@@ -149,9 +173,24 @@ class Dataset {
 class Analysis {
     - _id: ObjectId
     - datasetId: ObjectId
-    - metrics: JSONObject
-    - status: String
+    - companyId: ObjectId
+    - status: AnalysisStatus
+    - profile: DatasetProfile
+    - createdAt: Date
+    - updatedAt: Date
+
     + fetchDashboard(): JSON
+}
+
+class DatasetProfile {
+    - metadata
+    - dataDictionary
+    - quality
+    - missingValues
+    - cleaning
+    - transformation
+    - analytics
+    - insights
 }
 
 interface StorageProvider {
@@ -181,6 +220,7 @@ Dataset "1" -- "1" Analysis : genera >
 DatasetService ..> StorageProvider : depende de (DIP) >
 MinIOStorageProvider ..|> StorageProvider : implementa >
 DatasetService --> Dataset : persiste >
+Analysis "1" -- "1" DatasetProfile : tiene >
 @endum
 ```
 
@@ -334,11 +374,46 @@ DELETED --> [*]
 @enduml
 ```
 
+### 4.7 Diagrama de Secuencia (Consulta del Dashboard)
+
+Una vez finalizado el procesamiento, el frontend consulta el análisis persistido sin necesidad de reprocesar el dataset.
+
+```plantuml
+@startuml
+autonumber
+
+actor Usuario
+
+participant "React Frontend" as Frontend
+participant "Express Backend" as Backend
+database MongoDB
+
+Usuario -> Frontend: Abrir análisis
+
+Frontend -> Backend: GET /datasets/:id/analysis
+
+activate Backend
+
+Backend -> MongoDB: Buscar Analysis por datasetId
+
+MongoDB --> Backend: Documento Analysis
+
+Backend --> Frontend: JSON Analysis
+
+deactivate Backend
+
+Frontend -> Frontend: Renderizar Dashboard
+
+Frontend --> Usuario: Mostrar KPIs, gráficos e insights
+
+@enduml
+```
+
 ---
 
 ## 5. Modelos de Datos y Contratos de API
 
-> Las claves usan `camelCase` en todos los contratos, consistente con los esquemas Mongoose (`Analysis.kpis`, `Analysis.monthlyTrends`) ya implementados en la API.
+> **Nota:** La especificación detallada de todas las colecciones MongoDB, sus atributos, relaciones lógicas y decisiones de modelado se encuentra documentada en [`docs/database_model.md`](./database_model.md). Esta sección describe únicamente los contratos intercambiados entre el Backend y el microservicio de Analytics.
 
 ### 5.1 Notificación de Procesamiento (Express -> FastAPI)
 
@@ -359,19 +434,20 @@ Enviada una única vez, inmediatamente después de que el `StorageProvider` conf
 ```json
 {
   "status": "success",
-  "kpis": {
-    "totalRevenue": 1500000.0,
-    "averageTicket": 8600.5,
-    "topSellingProduct": "Notebook Pro 15",
-    "totalOrders": 174
-  },
-  "monthlyTrends": [
-    { "month": "Enero", "revenue": 450000 },
-    { "month": "Febrero", "revenue": 520000 },
-    { "month": "Marzo", "revenue": 530000 }
-  ]
+  "profile": {
+    "metadata": {},
+    "data_dictionary": [],
+    "quality": {},
+    "missing_values": {},
+    "cleaning": {},
+    "transformation": {},
+    "analytics": {},
+    "insights": {}
+  }
 }
 ```
+
+El objeto `profile` representa el análisis completo generado por el motor analítico y constituye el contrato principal consumido por el frontend para renderizar el Dashboard.
 
 ### 5.3 Callback de Procesamiento Fallido (FastAPI -> Express)
 
@@ -572,3 +648,52 @@ Profiler --> Engine: DatasetProfile
 deactivate Profiler
 @enduml
 ```
+
+### 7.5 Construcción del Dashboard Analítico
+
+Una vez finalizado el perfilado del dataset, el motor analítico construye un único objeto `AnalysisProfile` que concentra toda la información necesaria para el Dashboard.
+
+Actualmente dicho objeto contiene:
+
+- Metadata del dataset.
+- Diccionario de datos.
+- Métricas de calidad.
+- Valores faltantes.
+- Reporte de limpieza.
+- Transformaciones aplicadas.
+- Visualizaciones estadísticas.
+- Resumen ejecutivo.
+- Insights agrupados por categorías.
+
+Este documento es persistido íntegramente en MongoDB y posteriormente consumido por el frontend mediante una única consulta REST, evitando reprocesar el archivo original en cada visualización.
+
+### 7.6 Pipeline Analítico
+
+El procesamiento completo de un dataset sigue una secuencia determinística donde cada etapa consume el resultado de la anterior hasta construir el documento `Analysis`.
+
+```plantuml
+@startuml
+left to right direction
+
+rectangle "DatasetLoader" as Loader
+rectangle "CleaningEngine" as Cleaning
+rectangle "DatasetProfiler" as Profiler
+rectangle "TransformationEngine" as Transformation
+rectangle "AnalyticsEngine" as Analytics
+rectangle "InsightEngine" as Insights
+rectangle "ProfileExporter" as Exporter
+
+database "MongoDB" as Mongo
+
+Loader --> Cleaning : DataFrame
+Cleaning --> Profiler : Clean DataFrame
+Profiler --> Transformation : DatasetProfile
+Transformation --> Analytics : Enriched Profile
+Analytics --> Insights : Analytics Report
+Insights --> Exporter : Business Insights
+Exporter --> Mongo : Persist Analysis
+
+@enduml
+```
+
+La arquitectura implementada permite desacoplar completamente el procesamiento del consumo de información. Una vez persistido el documento `Analysis`, el frontend puede reconstruir el Dashboard completo mediante una única solicitud HTTP, reduciendo tiempos de respuesta y evitando ejecutar nuevamente algoritmos de análisis sobre el dataset original.

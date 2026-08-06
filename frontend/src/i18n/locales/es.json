@@ -249,7 +249,7 @@
     "columns": "Columnas",
     "quality": "Calidad",
     "processingTime": "Tiempo de análisis",
-    "engine": "Analytics Engine",
+    "engine": "Versión del Motor de Análisis",
     "python": "Python",
     "qualityMetrics": "Calidad del dataset",
     "missingValues": "Valores faltantes",

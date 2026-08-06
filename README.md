@@ -2,7 +2,7 @@
 
 > A modern Business Intelligence platform for Small and Medium-sized Enterprises (SMEs), transforming Excel and CSV files into interactive dashboards, KPIs, and automated business insights.
 
-> **Project Status:** 🚧 Active Development
+> **Project Status:** 🚧 Active Development (v1.0.0)
 
 ---
 
@@ -10,9 +10,14 @@
 
 Business Dashboard is a Full Stack Business Intelligence platform designed to help small and medium-sized businesses transform raw spreadsheet data into actionable business insights.
 
-The application enables users to upload Excel or CSV datasets, automatically process them, generate KPIs, visualize business metrics, and explore analytical reports through an intuitive dashboard.
+The application enables users to upload Excel or CSV datasets, automatically process them through a dedicated Analytics Engine, generate KPIs, visualize business metrics, inspect data quality, review transformations, and explore analytical reports through an interactive dashboard.
 
 The project follows a modular service-oriented architecture, separating business logic from analytical processing to ensure scalability, maintainability, and future AI integration.
+
+For a complete description of the software architecture, functional requirements, data model, and analytical pipeline, see:
+
+- [`docs/srs.md`](docs/srs.md) — Software Requirements Specification (SRS)
+- [`docs/database_model.md`](docs/database_model.md) — MongoDB Data Model
 
 ---
 
@@ -35,18 +40,32 @@ The project follows a modular service-oriented architecture, separating business
 - Dataset storage architecture design (MinIO + `StorageProvider` abstraction)
 - Dataset Module (upload, listing, retrieval and soft deletion)
 - MinIO integration
+- FastAPI Analytics Engine
+- Dataset profiling
+- Automatic data quality assessment
+- Automatic data cleaning suggestions
+- Automatic data type transformations
+- Analytics history
+- Interactive analysis viewer
+- Business insights generation
+- Charts generation
+- Executive summary generation
+- React Analytics Dashboard
 
 ## 🚧 In Progress
 
-- Analytics Service integration (FastAPI notification)
+- Business KPI Engine improvements
+- Advanced business metrics
+- Dashboard customization
 
 ## 📅 Planned
 
-- Analytics microservice (FastAPI)
-- Dashboard generation
-- AI-powered business analysis
-- Reporting
 - Predictive analytics
+- AI-powered recommendations
+- Scheduled reports
+- Dashboard sharing
+- Natural language querying
+- Forecasting models
 
 ---
 
@@ -74,13 +93,16 @@ Datasets are stored using a hybrid storage architecture:
 
 ## Business Intelligence
 
-- Company management
-- CSV / Excel upload, stored in MinIO (Object Storage) via a `StorageProvider` abstraction — never in MongoDB
-- Dataset upload
+- Excel / CSV upload
 - Dataset management
-- Dataset processing
+- Automatic dataset profiling
+- Data quality evaluation
+- Automatic data cleaning
+- Automatic semantic transformations
+- Interactive charts
+- Business insights generation
+- Executive summaries
 - KPI generation
-- Interactive dashboards
 - Analysis history
 
 ## Future Features
@@ -110,7 +132,7 @@ Datasets are stored using a hybrid storage architecture:
 
         ▼               ▼               ▼
 
-    MongoDB           MinIO       FastAPI (Python)
+    MongoDB           MinIO     Analytics Engine (FastAPI)
    (metadata)     (file storage)         │
                         ▲                │
                         └── reads files ─┘
@@ -118,6 +140,8 @@ Datasets are stored using a hybrid storage architecture:
 
                            Pandas / NumPy
 ```
+
+> 📖 For a complete description of the system architecture, UML diagrams, software requirements, API contracts, and analytics workflow, see the [Software Requirements Specification](docs/srs.md).
 
 ## Responsibilities
 
@@ -149,8 +173,14 @@ Datasets are stored using a hybrid storage architecture:
 - Data cleaning
 - KPI calculation
 - Statistical analysis
-- Forecasting (future)
-- AI-powered analysis (future)
+- Dataset profiling
+- Data dictionary generation
+- Quality scoring
+- Cleaning recommendations
+- Data transformations
+- Business insights
+- Chart generation
+- Executive summaries
 
 ---
 
@@ -187,47 +217,14 @@ Datasets are stored using a hybrid storage architecture:
 - Pandas
 - NumPy
 - OpenPyXL
+- Pydantic
+- Scikit-learn (future)
 
 ## Infrastructure
 
 - Docker
 - Docker Compose
 - MinIO (S3-compatible Object Storage)
-
----
-
-# Project Structure
-
-```text
-business-dashboard/
-
-├── frontend/
-│
-├── api/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── storage/          (StorageProvider abstraction, MinIO implementation)
-│   ├── validators/
-│   ├── utils/
-│   ├── config/
-│   ├── openapi/
-│   ├── types/
-│   ├── contracts/
-│   └── tests/
-│
-├── analytics/
-│
-├── docs/
-│
-├── docker-compose.yml
-│
-├── README.md
-│
-└── AGENTS.md
-```
 
 ---
 
@@ -288,6 +285,10 @@ PORT=3000
 
 MONGO_URI=mongodb://mongo:27017/business_dashboard
 
+NODE_ENV=development
+
+ANALYTICS_SERVICE_URL=http://analytics:8000
+
 JWT_ACCESS_SECRET=your_access_secret
 
 JWT_REFRESH_SECRET=your_refresh_secret
@@ -312,10 +313,19 @@ MINIO_BUCKET=datasets
 
 ANALYTICS_SERVICE_URL=http://analytics:8000
 
-INTERNAL_API_KEY=your_internal_api_key
 ```
 
 > `MINIO_*` and `INTERNAL_API_KEY` back the Dataset module's storage architecture — see [`docs/srs.md` §6](docs/srs.md#6-decisiones-arquitectónicas-almacenamiento-y-procesamiento-de-datasets) for the full design.
+
+===
+
+Also, the frontend requires an `.env` file inside the `frontend/` directory.
+
+Example:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+```
 
 ---
 
@@ -348,7 +358,7 @@ The project follows modern software engineering practices:
 ## Phase 2
 
 - ✅ Company Module
-- Analysis Module
+- ✅ Analysis Module
 
 ## Phase 3
 
@@ -363,12 +373,13 @@ The project follows modern software engineering practices:
 
 ## Phase 5
 
-- Analytics microservice
-- Express ↔ FastAPI integration
+- ✅ Analytics microservice
+- ✅ Express ↔ FastAPI integration
 
 ## Phase 6
 
-- Interactive dashboards
+- Business KPI Engine improvements
+- Advanced dashboards
 
 ## Phase 7
 
@@ -376,7 +387,8 @@ The project follows modern software engineering practices:
 
 ## Phase 8
 
-- Artificial Intelligence features
+- AI Recommendations
+- Natural Language Analytics
 
 ---
 
@@ -403,12 +415,16 @@ This project is also intended to deepen practical experience in:
 
 The long-term goal is to evolve Business Dashboard into a complete Business Intelligence platform capable of:
 
-- Predictive Analytics
-- AI-powered Insights
-- Business Recommendations
-- Natural Language Analytics
-- Decision Support Systems
-- Automated KPI generation
+- Automated dataset profiling
+- Business KPI generation
+- Executive summaries
+- Interactive dashboards
+- Historical analysis
+- Predictive analytics
+- AI-powered business insights
+- Natural language analytics
+- Decision support systems
+- Automated reporting
 
 ---
 
